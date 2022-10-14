@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'models/character.dart';
 import 'models/class.dart';
+import 'models/feature.dart';
 
 TextStyle titleStyle = const TextStyle(
   color: Colors.red,
@@ -143,7 +144,7 @@ class _UserHomePageState extends State<UserHomePage> {
           activeCharacter.level!.number!.toString(),
           style: headerText,
         ),
-        Divider(),
+        const Divider(),
         const Text(
           'Race',
           style: contentText,
@@ -152,7 +153,7 @@ class _UserHomePageState extends State<UserHomePage> {
           activeCharacter.race!.name!,
           style: headerText,
         ),
-        Divider(),
+        const Divider(),
         const Text(
           'Class',
           style: contentText,
@@ -173,25 +174,92 @@ class _UserHomePageState extends State<UserHomePage> {
     );
   }
 
+  Widget _buildList(Feature list) {
+    return Card(
+      child: ExpansionTile(
+        leading: const Icon(
+          Icons.account_circle,
+        ),
+        title: Text(
+          list.name!,
+        ),
+        children: const [
+          Text(
+            'things go in here',
+          )
+        ],
+      ),
+    );
+  }
+
+  Padding featuresList(List<Feature> FeatureList, String type) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Container(
+        color: Colors.blueGrey,
+        height: 200,
+        child: ListView(
+          children: [
+            Text(
+              '$type Features',
+              style: contentText,
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: FeatureList.length,
+              itemBuilder: (BuildContext context, int index) =>
+                  _buildList(FeatureList[index]),
+            ),
+          ],
+        )
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     activeCharacter = widget.activeCharacter;
+    List<Feature> featureList = activeCharacter.level!.featureList!;
+
+    List<Feature> classFeatureList = [];
+    List<Feature> raceFeatureList = [];
+    List<Feature> subclassFeatureList = [];
+
+    for (int i = 0; i < featureList.length; i++) {
+      if (featureList[i].source == 'class') {
+        classFeatureList.add(featureList[i]);
+      }
+      else if (featureList[i].source == 'race') {
+        raceFeatureList.add(featureList[i]);
+      }
+      else if (featureList[i].source == 'subclass') {
+        subclassFeatureList.add(featureList[i]);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            homePageHead,
-            bodyContent(activeCharacter),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: buttonScroll,
-            )
-          ],
-        ),
+      body: ListView(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                homePageHead,
+                bodyContent(activeCharacter),
+                featuresList(raceFeatureList, 'Race'),
+                featuresList(classFeatureList, 'Class'),
+                featuresList(subclassFeatureList, 'Subclass'),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: buttonScroll,
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

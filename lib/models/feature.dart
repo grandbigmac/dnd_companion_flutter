@@ -7,10 +7,12 @@ class Feature {
   String? name;
   String? effect;
   int? levelReq;
+  String? source;
 
   Feature({
     this.name,
     this.effect,
     this.levelReq,
+    this.source,
   });
 }

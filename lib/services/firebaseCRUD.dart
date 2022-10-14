@@ -89,32 +89,36 @@ class FirebaseCRUD {
     for (var doc in querySnapshotRace.docs) {
       String name = doc.get('name');
       String effect = doc.get('effect');
+      String source = doc.get('source');
 
-      featureList.add(Feature(name: name, effect: effect,));
+      featureList.add(Feature(name: name, effect: effect, source: source));
     }
 
+    log((level+1).toString());
     //Query for class features
     final querySnapshotClass = await FirebaseFirestore.instance.collection('classes')
-        .doc(classString).collection('features').where('levelReq', isLessThan: level).get();
+        .doc(classString).collection('features').where('levelReq', isLessThanOrEqualTo: level).get();
 
     for (var doc in querySnapshotClass.docs) {
       String name = doc.get('name');
       String effect = doc.get('effect');
       int levelReq = doc.get('levelReq');
+      String source = doc.get('source');
 
-      featureList.add(Feature(name: name, effect: effect, levelReq: levelReq));
+      featureList.add(Feature(name: name, effect: effect, levelReq: levelReq, source: source));
     }
 
     //Query for subclass features
     final querySnapshotSubclass = await FirebaseFirestore.instance.collection('subclasses')
-        .doc(subclassString).collection('features').where('levelReq', isLessThan: level).get();
+        .doc(subclassString).collection('features').where('levelReq', isLessThanOrEqualTo: level).get();
 
     for (var doc in querySnapshotSubclass.docs) {
       String name = doc.get('name');
       String effect = doc.get('effect');
       int levelReq = doc.get('levelReq');
+      String source = doc.get('source');
 
-      featureList.add(Feature(name: name, effect: effect, levelReq: levelReq));
+      featureList.add(Feature(name: name, effect: effect, levelReq: levelReq, source: source));
     }
 
     return featureList;
