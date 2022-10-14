@@ -6,7 +6,7 @@ import 'level.dart';
 
 class Subclass {
   String? name;
-  List<Level>? levels;
+  Level? levels;
 
 
   Subclass({

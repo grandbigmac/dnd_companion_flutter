@@ -43,6 +43,8 @@ class FirebaseCRUD {
     raceString = snapshotCharacter['race'];
     subclassString = snapshotCharacter['subclass'];
 
+    final snapshotRace = await FirebaseFirestore.instance.collection('races').doc(raceString).get();
+
     //Get character Level
     level = await snapshotCharacter['level'];
 
@@ -57,8 +59,10 @@ class FirebaseCRUD {
         number: level,
         featureList: featureList);
 
+    subClass = Subclass(name: subclassString, levels: charLevel);
+
     //Create race object
-    race = Race(name: snapshotCharacter['name']);
+    race = Race(name: snapshotRace['name']);
 
     //Create class object
     charClass = Class(name: snapshotClass['name']);

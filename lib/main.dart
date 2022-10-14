@@ -9,7 +9,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MaterialApp(home: UserHomePage(title: 'Launching',)));
+  runApp(const MaterialApp(home: LaunchPage(title: 'Launching',)));
 }
 
 
