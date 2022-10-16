@@ -633,6 +633,7 @@ class _ChooseNameAndReview extends State<CreateCharacter3> {
                     onPressed: () {
                       log('finish character');
                       character.name = characterNameController.text.toString();
+                      FirebaseCRUD.addNewCharacter(character: character);
                     },
                     style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                     child: const Text('COMPLETE', style: TextStyle(color: Colors.white),),
@@ -654,7 +655,7 @@ class _ChooseNameAndReview extends State<CreateCharacter3> {
         children: [
           Column(
             children: [
-              characterDetails(),
+              SizedBox(height: 500, child: characterDetails()),
               Padding(padding: const EdgeInsets.all(24), child: setName()),
             ],
           )

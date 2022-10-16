@@ -78,6 +78,50 @@ class FirebaseCRUD {
     return classes;
   }
 
+  static Future<Response> addNewCharacter({
+    required Character character,
+  }) async {
+    //GET THE CHARACTER AND RACE STRINGS FROM THEIR DOC ID'S
+    String raceString = '', classString = '';
+
+    await FirebaseFirestore.instance.collection('races').where('name', isEqualTo: character.race!.name).get().then((value) {
+      for (var i in value.docs) {
+        raceString = i.id;
+      }
+    });
+    await FirebaseFirestore.instance.collection('classes').where('name', isEqualTo: character.charClass!.name).get().then((value) {
+      for (var i in value.docs) {
+        classString = i.id;
+      }
+    });
+
+
+    Response response = Response();
+    CollectionReference collection = FirebaseFirestore.instance.collection('characters');
+    DocumentReference documentReference = collection.doc();
+
+    Map<String, dynamic> data = <String, dynamic>{
+      'name': character.name,
+      'level': 1,
+      'race': raceString,
+      'class': classString,
+      'subclass': ''
+    };
+
+    var result = await documentReference
+        .set(data)
+        .whenComplete(() {
+      response.code = 200;
+      response.message = 'Successfully added to firestore';
+    })
+        .catchError((e) {
+      response.code = 500;
+      response.message = e;
+    });
+
+    return response;
+  }
+
 
 
   static Future<Character> getCharacter(String uId) async {
@@ -177,17 +221,24 @@ class FirebaseCRUD {
       featureList.add(Feature(name: name, effect: effect, levelReq: levelReq, source: source));
     }
 
-    //Query for subclass features
-    final querySnapshotSubclass = await FirebaseFirestore.instance.collection('subclasses')
-        .doc(subclassString).collection('features').where('levelReq', isLessThanOrEqualTo: level).get();
+    if (subclassString != ''){
+      //Query for subclass features
+      final querySnapshotSubclass = await FirebaseFirestore.instance
+          .collection('subclasses')
+          .doc(subclassString)
+          .collection('features')
+          .where('levelReq', isLessThanOrEqualTo: level)
+          .get();
 
-    for (var doc in querySnapshotSubclass.docs) {
-      String name = doc.get('name');
-      String effect = doc.get('effect');
-      int levelReq = doc.get('levelReq');
-      String source = doc.get('source');
+      for (var doc in querySnapshotSubclass.docs) {
+        String name = doc.get('name');
+        String effect = doc.get('effect');
+        int levelReq = doc.get('levelReq');
+        String source = doc.get('source');
 
-      featureList.add(Feature(name: name, effect: effect, levelReq: levelReq, source: source));
+        featureList.add(Feature(
+            name: name, effect: effect, levelReq: levelReq, source: source));
+      }
     }
 
     return featureList;

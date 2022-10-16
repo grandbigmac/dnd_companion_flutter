@@ -183,9 +183,12 @@ class _UserHomePageState extends State<UserHomePage> {
         title: Text(
           list.name!,
         ),
-        children: const [
-          Text(
-            'things go in here',
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              list.effect!,
+            ),
           )
         ],
       ),
@@ -206,6 +209,7 @@ class _UserHomePageState extends State<UserHomePage> {
             ),
             ListView.builder(
               shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: FeatureList.length,
               itemBuilder: (BuildContext context, int index) =>
                   _buildList(FeatureList[index]),
