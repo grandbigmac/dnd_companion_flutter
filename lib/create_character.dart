@@ -1,5 +1,7 @@
+import 'dart:core';
 import 'dart:developer';
 
+import 'package:dnd_app_flutter/services/dice_rolls.dart';
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,7 @@ import 'models/feature.dart';
 import 'models/race.dart';
 
 TextStyle titleStyle = const TextStyle(
-  color: Colors.red,
+  color: Colors.blue,
   fontSize: 20,
   fontFamily: 'Roboto',
 );
@@ -504,119 +506,268 @@ class CreateCharacter3 extends StatefulWidget {
 }
 class _ChooseAbilityScores extends State<CreateCharacter3> {
 
+  List<int> scores = [10, 10, 10, 10, 10, 10];
+  List<int> modifiers = [0, 0, 0, 0, 0, 0];
+  int result = 0;
+  List<String> scoreNames = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+  String selectedScore = 'STR';
+
 
   @override
   Widget build(BuildContext context) {
     Character character = widget.character;
+    List<Race> raceList = widget.races;
+    List<Class> classList = widget.classes;
 
-    Container characterDetails() {
-      String charClass = character.charClass!.name!;
-      String charRace = character.race!.name!;
-      List<Feature> classFeatures = character.charClass!.featureList!;
-      List<Feature> raceFeatures = character.race!.featureList!;
-
-      Widget getFeatures() {
-        List<Feature> level1Features = [];
-        for (int i = 0; i < classFeatures.length; i++) {
-          if (classFeatures[i].levelReq == 1) {
-            level1Features.add(classFeatures[i]);
-          }
-        }
-
-        return Container(
-          child: Column(
+    Widget scoreDisplay = Container(
+      padding: const EdgeInsets.all(24),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(
-                'Class Features',
-                style: headerText,
+              Column(
+                children: [
+                  const Text(
+                    'STR',
+                    style: contentText,
+                  ),
+                  Text(
+                    '${modifiers[0]}',
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${scores[0]}',
+                    style: contentText,
+                  )
+                ],
               ),
-              Container(
-                height: 150,
-                child: ListView.builder(
-                  itemCount: level1Features.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    String featureName = level1Features[index].name!;
-                    return ListTile(
-                      leading: const Icon(Icons.star),
-                      title: Text(featureName, style: contentText,),
-                    );
-                  },
-                ),
+              Column(
+                children: [
+                  const Text(
+                    'DEX',
+                    style: contentText,
+                  ),
+                  Text(
+                    '${modifiers[1]}',
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${scores[1]}',
+                    style: contentText,
+                  )
+                ],
               ),
-              Text(
-                'Race Features',
-                style: headerText,
-              ),
-              Container(
-                height: 150,
-                child: ListView.builder(
-                  itemCount: raceFeatures.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    String featureName = raceFeatures[index].name!;
-                    return ListTile(
-                      leading: const Icon(Icons.star),
-                      title: Text(featureName, style: contentText,),
-                    );
-                  },
-                ),
-              )
             ],
-          )
-        );
-      }
+          ),
+          const SizedBox(height: 24,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  const Text(
+                    'CON',
+                    style: contentText,
+                  ),
+                  Text(
+                    '${modifiers[2]}',
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${scores[2]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  const Text(
+                    'INT',
+                    style: contentText,
+                  ),
+                  Text(
+                    '${modifiers[3]}',
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${scores[3]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 24,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  const Text(
+                    'WIS',
+                    style: contentText,
+                  ),
+                  Text(
+                    '${modifiers[4]}',
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${scores[4]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  const Text(
+                    'CHA',
+                    style: contentText,
+                  ),
+                  Text(
+                    '${modifiers[5]}',
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${scores[5]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
 
+
+    DropdownButton<String> dropDownRace(List<String> list) {
+      return DropdownButton(
+        value: selectedScore,
+        icon: const Icon(Icons.arrow_drop_down_outlined),
+        elevation: 16,
+        style: contentText,
+        underline: Container(
+          height: 2,
+          color: Colors.blue,
+        ),
+        onChanged: (String? value) {
+          log('changing state');
+          setState(() {
+            log('changing state');
+            selectedScore = value!;
+
+            if (selectedScore == 'STR') {
+              scores[0] = result;
+              double mod = result.toDouble();
+              mod = (mod - 10) / 2;
+              modifiers[0] = mod.floor();
+            }
+            else if (selectedScore == 'DEX') {
+              scores[1] = result;
+              double mod = result.toDouble();
+              mod = (mod - 10) / 2;
+              modifiers[1] = mod.floor();
+            }
+            else if (selectedScore == 'CON') {
+              scores[2] = result;
+              double mod = result.toDouble();
+              mod = (mod - 10) / 2;
+              modifiers[2] = mod.floor();
+            }
+            else if (selectedScore == 'INT') {
+              scores[3] = result;
+              double mod = result.toDouble();
+              mod = (mod - 10) / 2;
+              modifiers[3] = mod.floor();
+            }
+            else if (selectedScore == 'WIS') {
+              scores[4] = result;
+              double mod = result.toDouble();
+              mod = (mod - 10) / 2;
+              modifiers[4] = mod.floor();
+            }
+            else if (selectedScore == 'CHA') {
+              scores[5] = result;
+              double mod = result.toDouble();
+              mod = (mod - 10) / 2;
+              modifiers[5] = mod.floor();
+            }
+          });
+        },
+        items: list.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      );
+    }
+
+    Widget rollScore() {
       return Container(
-        padding: const EdgeInsets.all(24),
         width: double.infinity,
+        padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Race',
+              'Roll a Stat',
               style: headerText,
             ),
-            Text(
-              '$charRace',
-              style: contentText,
+            const SizedBox(
+              height: 20,
             ),
-            const Divider(),
-            const Text(
-              'Class',
-              style: headerText,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  height: 35,
+                  width: 60,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        result = roll4D4Drop1();
+                        log(result.toString());
+                      });
+                    },
+                    child: const Text('Roll', style: TextStyle(color: Colors.white),),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    boxShadow: const [
+                      BoxShadow(color: Colors.blue, spreadRadius: 1),
+                    ]
+                  ),
+                  child: Text(
+                    '$result',
+                    style: contentText,
+                  ),
+                ),
+                dropDownRace(scoreNames),
+              ],
             ),
-            Text(
-              '$charClass',
-              style: contentText,
-            ),
-            const Divider(),
-            getFeatures(),
+
           ],
         ),
       );
     }
 
-    Container setName() {
-      TextEditingController characterNameController = TextEditingController();
+    Widget buttonRow() {
 
       return Container(
         width: double.infinity,
         child: Column(
           children: [
-            const Text(
-              'Choose a name',
-              style: headerText,
-            ),
-            TextFormField(
-              controller: characterNameController,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Character Name',
-                labelStyle: contentText
-              ),
-            ),
-            const SizedBox(height: 50,),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 SizedBox(
                   height: 35,
@@ -624,6 +775,14 @@ class _ChooseAbilityScores extends State<CreateCharacter3> {
                   child: ElevatedButton(
                     onPressed: () {
                       log('go back');
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: CreateCharacter2(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                            inheritTheme: true,
+                            ctx: context),
+                      );
                     },
                     style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                     child: const Text('BACK', style: TextStyle(color: Colors.white),),
@@ -634,16 +793,23 @@ class _ChooseAbilityScores extends State<CreateCharacter3> {
                   width: 140,
                   child: ElevatedButton(
                     onPressed: () {
-                      log('finish character');
-                      character.name = characterNameController.text.toString();
-                      FirebaseCRUD.addNewCharacter(character: character);
+                      log('go back');
+                      character.abilityScores = scores;
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: CreateCharacter4(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                            inheritTheme: true,
+                            ctx: context),
+                      );
                     },
                     style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-                    child: const Text('COMPLETE', style: TextStyle(color: Colors.white),),
+                    child: const Text('BACK', style: TextStyle(color: Colors.white),),
                   ),
                 ),
               ],
-            ),
+            )
           ],
         ),
       );
@@ -654,23 +820,22 @@ class _ChooseAbilityScores extends State<CreateCharacter3> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: ListView(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            children: [
-              SizedBox(height: 500, child: characterDetails()),
-              Padding(padding: const EdgeInsets.all(24), child: setName()),
-            ],
-          )
+          buttonRow(),
+          rollScore(),
+          scoreDisplay,
         ],
-      ),
+      )
     );
   }
 }
 
 //CHOOSE NAME AND FINALISE
 class CreateCharacter4 extends StatefulWidget {
-  const CreateCharacter4({super.key, required this.title, required this.races, required this.classes, required this.character});
+  const CreateCharacter4({super.key, required this.title, required this.races, required this.classes, required this.character,});
   final String title;
   final List<Race> races;
   final List<Class> classes;
@@ -685,13 +850,211 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
   @override
   Widget build(BuildContext context) {
     Character character = widget.character;
-
+    //STR, DEX, CON, INT, WIS, CHA
+    List<int> abilityScores = widget.character!.abilityScores!;
+    List<String> stringMods = [];
 
     Container characterDetails() {
       String charClass = character.charClass!.name!;
       String charRace = character.race!.name!;
       List<Feature> classFeatures = character.charClass!.featureList!;
       List<Feature> raceFeatures = character.race!.featureList!;
+
+      Widget abilityScoresRow() {
+        log('it is calling atleast');
+
+        List<String> racialIncrease = [];
+        if (character.race!.asi!.contains(",")){
+          racialIncrease = character.race!.asi!.split(',');
+
+          for (int i = 0; i < racialIncrease.length; i++) {
+            int number;
+            if (racialIncrease.length > 0){
+              number = int.parse(racialIncrease[i][1]);
+
+              if (racialIncrease[i].contains('STR')) {
+                abilityScores[0] = abilityScores[0] + number;
+                log('+STR');
+              }
+              else if (racialIncrease[i].contains('DEX')) {
+                abilityScores[1] = abilityScores[1] + number;
+                log('+DEX');
+              }
+              else if (racialIncrease[i].contains('CON')) {
+                abilityScores[2] = abilityScores[2] + number;
+                log('+CON');
+              }
+              else if (racialIncrease[i].contains('INT')) {
+                abilityScores[3] = abilityScores[3] + number;
+                log('INT');
+              }
+              else if (racialIncrease[i].contains('WIS')) {
+                abilityScores[4] = abilityScores[4] + number;
+                log('+WIS');
+              }
+              else if (racialIncrease[i].contains('CHA')) {
+                abilityScores[5] = abilityScores[5] + number;
+                log('+CHA');
+              }
+            }
+          }
+        }
+        else {
+          int number = int.parse(character.race!.asi![1]);
+          log(number.toString());
+
+          if (character.race!.asi!.contains('STR')) {
+            abilityScores[0] = abilityScores[0] + number;
+            log('+STR');
+          }
+          else if (character.race!.asi!.contains('DEX')) {
+            abilityScores[1] = abilityScores[1] + number;
+            log('+DEX');
+          }
+          else if (character.race!.asi!.contains('CON')) {
+            abilityScores[2] = abilityScores[2] + number;
+            log('+CON');
+          }
+          else if (character.race!.asi!.contains('INT')) {
+            abilityScores[3] = abilityScores[3] + number;
+            log('INT');
+          }
+          else if (character.race!.asi!.contains('WIS')) {
+            abilityScores[4] = abilityScores[4] + number;
+            log('+WIS');
+          }
+          else if (character.race!.asi!.contains('CHA')) {
+            abilityScores[5] = abilityScores[5] + number;
+            log('+CHA');
+          }
+        }
+        log(racialIncrease.length.toString());
+        log(character.race!.asi!);
+
+
+        for (int i = 0; i < abilityScores.length; i++) {
+          double score = abilityScores[i].toDouble();
+          score = (score - 10) / 2;
+          int mod = score.floor();
+          if (mod < 0) {
+            stringMods.add(mod.toString());
+          }
+          else {
+            stringMods.add('+$mod');
+          }
+        }
+
+
+        return Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    'STR',
+                    style: contentText,
+                  ),
+                  Text(
+                    '${stringMods[0]}',
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${abilityScores[0]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    'DEX',
+                    style: contentText,
+                  ),
+                  Text(
+                    stringMods[1],
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${abilityScores[1]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    'CON',
+                    style: contentText,
+                  ),
+                  Text(
+                    stringMods[2],
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${abilityScores[2]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    'INT',
+                    style: contentText,
+                  ),
+                  Text(
+                    stringMods[3],
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${abilityScores[3]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    'WIS',
+                    style: contentText,
+                  ),
+                  Text(
+                    stringMods[4],
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${abilityScores[4]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    'CHA',
+                    style: contentText,
+                  ),
+                  Text(
+                    stringMods[5],
+                    style: titleStyle,
+                  ),
+                  Text(
+                    '${abilityScores[5]}',
+                    style: contentText,
+                  )
+                ],
+              ),
+            ],
+          ),
+        );
+      }
 
       Widget getFeatures() {
         List<Feature> level1Features = [];
@@ -721,6 +1084,7 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
                     },
                   ),
                 ),
+                const Divider(),
                 Text(
                   'Race Features',
                   style: headerText,
@@ -743,121 +1107,6 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
         );
       }
 
-      Widget abilityScoresRow() {
-        log('it is calling atleast');
-        //STR, DEX, CON, INT, WIS, CHA
-        List<int> abilityScores = [10, 16, 14, 8, 12, 14];
-
-        List<String> racialIncrease = character.race!.asi!.split(',');
-        for (int i = 0; i < racialIncrease.length; i++) {
-          int number = int.parse(racialIncrease[1]);
-          if (racialIncrease[i].contains('STR')) {
-            abilityScores[0] = abilityScores[0] + number;
-          }
-          else if (racialIncrease[i].contains('DEX')) {
-            abilityScores[1] = abilityScores[1] + number;
-          }
-          else if (racialIncrease[i].contains('CON')) {
-            abilityScores[2] = abilityScores[2] + number;
-          }
-          else if (racialIncrease[i].contains('INT')) {
-            abilityScores[3] = abilityScores[3] + number;
-          }
-          else if (racialIncrease[i].contains('WIS')) {
-            abilityScores[4] = abilityScores[4] + number;
-          }
-          else if (racialIncrease[i].contains('CHA')) {
-            abilityScores[5] = abilityScores[5] + number;
-          }
-        }
-
-        return Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    'STR',
-                    style: headerText,
-                  ),
-                  Text(
-                    '${abilityScores[0]}',
-                    style: contentText,
-                  )
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    'DEX',
-                    style: headerText,
-                  ),
-                  Text(
-                    '${abilityScores[1]}',
-                    style: contentText,
-                  )
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    'CON',
-                    style: headerText,
-                  ),
-                  Text(
-                    '${abilityScores[2]}',
-                    style: contentText,
-                  )
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    'INT',
-                    style: headerText,
-                  ),
-                  Text(
-                    '${abilityScores[3]}',
-                    style: contentText,
-                  )
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    'WIS',
-                    style: headerText,
-                  ),
-                  Text(
-                    '${abilityScores[4]}',
-                    style: contentText,
-                  )
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    'CHA',
-                    style: headerText,
-                  ),
-                  Text(
-                    '${abilityScores[5]}',
-                    style: contentText,
-                  )
-                ],
-              ),
-            ],
-          ),
-        );
-      }
-
       return Container(
         padding: const EdgeInsets.all(24),
         width: double.infinity,
@@ -869,7 +1118,7 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
               style: headerText,
             ),
             Text(
-              '$charRace is dwarf',
+              '$charRace',
               style: contentText,
             ),
             const Divider(),
@@ -883,6 +1132,7 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
             ),
             const Divider(),
             abilityScoresRow(),
+            const Divider(),
             getFeatures(),
           ],
         ),
@@ -943,6 +1193,7 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
       );
     }
 
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -951,7 +1202,7 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
         children: [
           Column(
             children: [
-              SizedBox(height: 500, child: characterDetails()),
+              SizedBox(height:555, child: characterDetails()),
               Padding(padding: const EdgeInsets.all(24), child: setName()),
             ],
           )

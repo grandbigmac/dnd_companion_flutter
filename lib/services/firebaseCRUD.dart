@@ -95,6 +95,13 @@ class FirebaseCRUD {
       }
     });
 
+    String abilityScores = character.abilityScores![0].toString() +
+        character.abilityScores![1].toString() + ',' +
+        character.abilityScores![2].toString() + ',' +
+        character.abilityScores![3].toString() + ',' +
+        character.abilityScores![4].toString() + ',' +
+        character.abilityScores![5].toString();
+
 
     Response response = Response();
     CollectionReference collection = FirebaseFirestore.instance.collection('characters');
@@ -105,7 +112,8 @@ class FirebaseCRUD {
       'level': 1,
       'race': raceString,
       'class': classString,
-      'subclass': ''
+      'subclass': '',
+      'abilityScores': abilityScores,
     };
 
     var result = await documentReference
