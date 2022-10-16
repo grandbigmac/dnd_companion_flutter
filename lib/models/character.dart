@@ -11,12 +11,14 @@ class Character {
   Class? charClass;
   Race? race;
   Subclass? subclass;
+  List<int>? abilityScores;
 
   Character({
     this.name,
     this.level,
     this.charClass,
     this.race,
-    this.subclass
+    this.subclass,
+    this.abilityScores
   });
 }

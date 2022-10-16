@@ -16,6 +16,6 @@ class Race {
     this.asi,
     this.speed,
     this.featureList,
-    this.description
+    this.description,
   });
 }
