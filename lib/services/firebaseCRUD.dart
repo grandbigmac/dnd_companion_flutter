@@ -16,6 +16,70 @@ final CollectionReference _collection = _firestore.collection('jobs');
 
 class FirebaseCRUD {
 
+  static Future<List<Race>> getRaces() async {
+    List<Race> races = [];
+    races.add(Race(name: '--'));
+
+    //Query for races
+    final querySnapshotRace = await FirebaseFirestore.instance.collection('races').get();
+
+    for (var doc in querySnapshotRace.docs) {
+      String raceName = doc.get('name');
+      String asi = doc.get('asi');
+      String languages = doc.get('languages');
+      String description = doc.get('description');
+      int speed = doc.get('speed');
+
+      List<Feature> raceFeatures = [];
+
+      final featureQuery = await FirebaseFirestore.instance.collection('races').doc(doc.id).collection('features').get();
+      for (var doc in featureQuery.docs) {
+        String name = doc.get('name');
+        String effect = doc.get('effect');
+        String source = doc.get('source');
+
+        raceFeatures.add(Feature(name: name, effect: effect, source: source));
+      }
+
+
+      races.add(Race(name: raceName, asi: asi, languages: languages, speed: speed, featureList: raceFeatures, description: description));
+    }
+
+    return races;
+  }
+
+  static Future<List<Class>> getClasses() async {
+    List<Class> classes = [];
+    classes.add(Class(name: '--'));
+
+    //Query for races
+    final querySnapshotClass = await FirebaseFirestore.instance.collection('classes').get();
+
+    for (var doc in querySnapshotClass.docs) {
+      String className = doc.get('name');
+      String description = doc.get('description');
+
+      List<Feature> classFeatures = [];
+
+      final featureQuery = await FirebaseFirestore.instance.collection('classes').doc(doc.id).collection('features').get();
+      for (var doc in featureQuery.docs) {
+        String name = doc.get('name');
+        String effect = doc.get('effect');
+        String source = doc.get('source');
+        int levelReq = doc.get('levelReq');
+
+        classFeatures.add(Feature(name: name, effect: effect, source: source, levelReq: levelReq));
+      }
+
+
+      classes.add(Class(name: className, featureList: classFeatures, description: description));
+    }
+
+    return classes;
+  }
+
+
+
   static Future<Character> getCharacter(String uId) async {
     int level;
 
@@ -62,10 +126,15 @@ class FirebaseCRUD {
     subClass = Subclass(name: subclassString, levels: charLevel);
 
     //Create race object
-    race = Race(name: snapshotRace['name']);
+    race = Race(
+        name: snapshotRace['name'],
+        speed: snapshotRace['speed'],
+        asi: snapshotRace['asi'],
+        languages: snapshotRace['languages'],
+    );
 
     //Create class object
-    charClass = Class(name: snapshotClass['name']);
+    charClass = Class(name: snapshotClass['name'], description: snapshotClass['description']);
 
     //Create Character object
     character = Character(

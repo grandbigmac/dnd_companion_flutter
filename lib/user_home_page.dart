@@ -13,12 +13,12 @@ TextStyle titleStyle = const TextStyle(
   fontSize: 20,
   fontFamily: 'Roboto',
 );
-const TextStyle headerText = TextStyle(
+const TextStyle contentText = TextStyle(
   fontSize: 14,
   fontFamily: 'Roboto',
   color: Color(0xFF455566),
 );
-const TextStyle contentText = TextStyle(
+const TextStyle headerText = TextStyle(
   fontSize: 12,
   fontFamily: 'Roboto',
   color: Color(0xFF329BD9),
@@ -130,45 +130,45 @@ class _UserHomePageState extends State<UserHomePage> {
       children: [
         const Text(
           'Character Name',
-          style: contentText,
+          style: headerText,
         ),
         Text(
           activeCharacter.name!,
-          style: headerText,
+          style: contentText,
         ),
         const Text(
           'Level',
-          style: contentText,
+          style: headerText,
         ),
         Text(
           activeCharacter.level!.number!.toString(),
-          style: headerText,
+          style: contentText,
         ),
         const Divider(),
         const Text(
           'Race',
-          style: contentText,
+          style: headerText,
         ),
         Text(
           activeCharacter.race!.name!,
-          style: headerText,
+          style: contentText,
         ),
         const Divider(),
         const Text(
           'Class',
-          style: contentText,
+          style: headerText,
         ),
         Text(
           activeCharacter.charClass!.name!,
-          style: headerText,
+          style: contentText,
         ),
         const Text(
           'Subclass',
-          style: contentText,
+          style: headerText,
         ),
         Text(
           activeCharacter.subclass!.name!,
-          style: headerText,
+          style: contentText,
         )
       ],
     );
@@ -202,7 +202,7 @@ class _UserHomePageState extends State<UserHomePage> {
           children: [
             Text(
               '$type Features',
-              style: contentText,
+              style: headerText,
             ),
             ListView.builder(
               shrinkWrap: true,
