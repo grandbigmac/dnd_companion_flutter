@@ -42,6 +42,9 @@ class CreateCharacter extends StatefulWidget {
 class _ChooseRaceState extends State<CreateCharacter> {
   String selectedRace = '--';
   Race charRace = Race(name: '--');
+  String abilityChoice = 'STR';
+  String newASI = '';
+  List<String> options = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +55,15 @@ class _ChooseRaceState extends State<CreateCharacter> {
     List<String> raceNameList = [];
     for (Race i in raceList) {
       raceNameList.add(i.name!);
+    }
+
+    void dropDownCallback(String? selectedValue) {
+      if (selectedValue is String) {
+        setState(() {
+          abilityChoice = selectedValue;
+          log('Value is now $abilityChoice');
+        });
+      }
     }
 
     DropdownButton<String> dropDownRace(List<String> list) {
@@ -86,87 +98,273 @@ class _ChooseRaceState extends State<CreateCharacter> {
       );
     }
 
+    DropdownButton<String> dropDownAbilityScore(String asi, String number) {
+      if (charRace.asi!.contains!('STR')) {
+        options.remove('STR');
+      }
+      else if (charRace.asi!.contains!('DEX')) {
+        options.remove('DEX');
+      }
+      else if (charRace.asi!.contains!('CON')) {
+        options.remove('CON');
+      }
+      else if (charRace.asi!.contains!('INT')) {
+        options.remove('INT');
+      }
+      else if (charRace.asi!.contains!('WIS')) {
+        options.remove('WIS');
+      }
+      else if (charRace.asi!.contains!('CHA')) {
+        options.remove('CHA');
+      }
+
+      return DropdownButton(
+        isExpanded: true,
+        value: abilityChoice,
+        icon: const Icon(Icons.arrow_drop_down_outlined),
+        elevation: 16,
+        style: contentText,
+        underline: Container(
+          height: 2,
+          color: Colors.blue,
+        ),
+        onChanged: (String? value) {
+          log('changing state');
+          setState(() {
+            log('changing state');
+            setState(() {
+              abilityChoice = value!;
+              log('Value is now $abilityChoice');
+
+              newASI = '$asi,+$number$abilityChoice'.substring(1);
+              log(newASI);
+            });
+          });
+        },
+        items: options.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      );
+    }
+
     Container raceInformation(Race chosenRace) {
       if (chosenRace.name != '--') {
         List<Feature> features = chosenRace.featureList!;
         String name = chosenRace.name!;
         String description = chosenRace.description!;
+        String asi = chosenRace.asi!;
+        List<String> asiList = [];
 
-        return Container(
-            padding: const EdgeInsets.all(24),
-            width: double.infinity,
-            height: 600,
-            child: ListView(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Race Name',
-                      style: headerText,
-                    ),
-                    Text(
-                      name,
-                      style: contentText,
-                    ),
-                    const Divider(),
-                    const Text(
-                      'Description',
-                      style: headerText,
-                    ),
-                    Text(
-                      description,
-                      style: contentText,
-                    ),
-                    const Divider(),
-                    const Text(
-                      'Features',
-                      style: headerText,
-                    ),
-                    Container(
-                      color: Colors.blue.withOpacity(0.4),
-                      child: ListView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        children: features.map((e) {
-                          String featureName = e.name!;
-                          String featureEffect = e.effect!;
-                          return Card(
-                            child: Column(
-                              children: [
-                                ExpansionTile(
-                                  leading: Icon(Icons.star, color: Colors.blue,),
-                                  title: Text('$featureName'),
-                                  children: [
-                                    Padding(
-                                        padding: const EdgeInsets.all(24),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Effect:',
-                                              style: headerText,
-                                            ),
-                                            Text(
-                                              '$featureEffect',
-                                              style: contentText,
-                                            ),
-                                          ],
-                                        )
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          );
-                        }).toList(),
+        if (asi.contains(',')) {
+          asiList = asi.split(',');
+          asi = '';
+          for (int i = 0; i < asiList.length; i++) {
+            if (i == 0) {
+              asi = asiList[i];
+            }
+            else {
+              asi = '$asi, ${asiList[i]}';
+            }
+          }
+        }
+
+        if (asi.contains('?')) {
+          String number = '';
+          asi = '?';
+
+          for (int i = 0; i < asiList.length; i++) {
+            if (!asiList[i].contains('?')) {
+              asi = asi + asiList[i];
+            }
+            else {
+              number = asiList[i][1];
+            }
+          }
+          return Container(
+              padding: const EdgeInsets.all(24),
+              width: double.infinity,
+              height: 600,
+              child: ListView(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Race Name',
+                        style: headerText,
                       ),
-                    )
-                  ],
-                ),
-              ],
-            )
-        );
+                      Text(
+                        name,
+                        style: contentText,
+                      ),
+                      const Divider(),
+                      const Text(
+                        'Ability Score Increases',
+                        style: headerText,
+                      ),
+                      Text(
+                        asi.substring(1),
+                        style: contentText,
+                      ),
+                      const Divider(),
+                      const Text(
+                        'Ability Score Choice',
+                        style: headerText,
+                      ),
+                      Text(
+                        'Your race can increase one skill of your choice by $number.',
+                        style: contentText,
+                      ),
+                      dropDownAbilityScore(asi, number),
+                      const Divider(),
+                      const Text(
+                        'Description',
+                        style: headerText,
+                      ),
+                      Text(
+                        description,
+                        style: contentText,
+                      ),
+                      const Divider(),
+                      const Text(
+                        'Features',
+                        style: headerText,
+                      ),
+                      Container(
+                        color: Colors.blue.withOpacity(0.4),
+                        child: ListView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          children: features.map((e) {
+                            String featureName = e.name!;
+                            String featureEffect = e.effect!;
+                            return Card(
+                              child: Column(
+                                children: [
+                                  ExpansionTile(
+                                    leading: Icon(Icons.star, color: Colors.blue,),
+                                    title: Text('$featureName'),
+                                    children: [
+                                      Padding(
+                                          padding: const EdgeInsets.all(24),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Effect:',
+                                                style: headerText,
+                                              ),
+                                              Text(
+                                                '$featureEffect',
+                                                style: contentText,
+                                              ),
+                                            ],
+                                          )
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              )
+          );
+        }
+        else {
+          newASI = asi;
+          return Container(
+              padding: const EdgeInsets.all(24),
+              width: double.infinity,
+              height: 600,
+              child: ListView(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Race Name',
+                        style: headerText,
+                      ),
+                      Text(
+                        name,
+                        style: contentText,
+                      ),
+                      const Divider(),
+                      const Text(
+                        'Ability Score Increases',
+                        style: headerText,
+                      ),
+                      Text(
+                        asi,
+                        style: contentText,
+                      ),
+                      const Divider(),
+                      const Text(
+                        'Description',
+                        style: headerText,
+                      ),
+                      Text(
+                        description,
+                        style: contentText,
+                      ),
+                      const Divider(),
+                      const Text(
+                        'Features',
+                        style: headerText,
+                      ),
+                      Container(
+                        color: Colors.blue.withOpacity(0.4),
+                        child: ListView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          children: features.map((e) {
+                            String featureName = e.name!;
+                            String featureEffect = e.effect!;
+                            return Card(
+                              child: Column(
+                                children: [
+                                  ExpansionTile(
+                                    leading: Icon(Icons.star, color: Colors.blue,),
+                                    title: Text('$featureName'),
+                                    children: [
+                                      Padding(
+                                          padding: const EdgeInsets.all(24),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Effect:',
+                                                style: headerText,
+                                              ),
+                                              Text(
+                                                '$featureEffect',
+                                                style: contentText,
+                                              ),
+                                            ],
+                                          )
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              )
+          );
+        }
       }
       else {
         return Container(
@@ -222,6 +420,24 @@ class _ChooseRaceState extends State<CreateCharacter> {
                                 width: 140,
                                 child: ElevatedButton(
                                   onPressed: () {
+                                    if (charRace.name == '--') {
+                                      SnackBar snackBar = const SnackBar(
+                                        content: Text(
+                                          'Select a valid race!',
+                                        ),
+                                      );
+
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                      return;
+                                    }
+                                    //factoring in ability score choice if race with ? is chosen
+                                    if (charRace.asi!.contains('?')) {
+                                      charRace.asi = newASI;
+                                      log(newASI);
+                                    }
+                                    else {
+                                      charRace.asi = newASI;
+                                    }
                                     character.race = charRace;
                                     Navigator.push(
                                       context,
@@ -439,7 +655,7 @@ class _ChooseClassState extends State<CreateCharacter2> {
                       padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
                       child: Column(
                         children: [const Text(
-                          'Select a race',
+                          'Select a class',
                           style: headerText,
                         ),
                         dropDownClass(classNameList),
@@ -452,6 +668,14 @@ class _ChooseClassState extends State<CreateCharacter2> {
                               child: ElevatedButton(
                                 onPressed: () {
                                   log('go back');
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        type: PageTransitionType.rightToLeft,
+                                        child: CreateCharacter(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                                        inheritTheme: true,
+                                        ctx: context),
+                                  );
                                 },
                                 style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                                 child: const Text('BACK', style: TextStyle(color: Colors.white),),
@@ -462,7 +686,18 @@ class _ChooseClassState extends State<CreateCharacter2> {
                               width: 140,
                               child: ElevatedButton(
                                 onPressed: () {
+                                  if (charClass.name == '--') {
+                                    SnackBar snackBar = const SnackBar(
+                                      content: Text(
+                                        'Select a valid class!',
+                                      ),
+                                    );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                    return;
+                                  }
                                   character.charClass = charClass;
+
                                   Navigator.push(
                                     context,
                                     PageTransition(
@@ -794,18 +1029,21 @@ class _ChooseAbilityScores extends State<CreateCharacter3> {
                   child: ElevatedButton(
                     onPressed: () {
                       log('go back');
-                      character.abilityScores = scores;
+                      for (int i = 0; i < scores.length; i++) {
+                        log(scores[i].toString());
+                      }
                       Navigator.push(
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: CreateCharacter4(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                            child: CreateCharacter4(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores,),
+
                             inheritTheme: true,
                             ctx: context),
                       );
                     },
                     style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-                    child: const Text('BACK', style: TextStyle(color: Colors.white),),
+                    child: const Text('CONTINUE', style: TextStyle(color: Colors.white),),
                   ),
                 ),
               ],
@@ -821,12 +1059,33 @@ class _ChooseAbilityScores extends State<CreateCharacter3> {
         title: Text(widget.title),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          buttonRow(),
-          rollScore(),
-          scoreDisplay,
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Text(
+                  'Press \'Roll\' to roll 4d6 dropping the lowest to generate an ability score, then select an ability to assign it to.',
+                  style: contentText,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const Divider(),
+              rollScore(),
+              const Divider(),
+              scoreDisplay,
+              const Divider(),
+              buttonRow(),
+            ],
+          )
         ],
       )
     );
@@ -835,24 +1094,29 @@ class _ChooseAbilityScores extends State<CreateCharacter3> {
 
 //CHOOSE NAME AND FINALISE
 class CreateCharacter4 extends StatefulWidget {
-  const CreateCharacter4({super.key, required this.title, required this.races, required this.classes, required this.character,});
+  const CreateCharacter4({super.key, required this.title, required this.races, required this.classes, required this.character, required this.scores});
   final String title;
   final List<Race> races;
   final List<Class> classes;
   final Character character;
+  final List<int> scores;
 
   @override
   State<CreateCharacter4> createState() => _ChooseNameAndReview();
 }
 class _ChooseNameAndReview extends State<CreateCharacter4> {
+  List<int> newScores = [];
 
 
   @override
   Widget build(BuildContext context) {
     Character character = widget.character;
     //STR, DEX, CON, INT, WIS, CHA
-    List<int> abilityScores = widget.character!.abilityScores!;
+    newScores = widget.scores;
+    List<int> abilityScores = newScores;
     List<String> stringMods = [];
+    List<Race> raceList = widget.races;
+    List<Class> classList = widget.classes;
 
     Container characterDetails() {
       String charClass = character.charClass!.name!;
@@ -1111,24 +1375,35 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
         padding: const EdgeInsets.all(24),
         width: double.infinity,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Race',
-              style: headerText,
-            ),
-            Text(
-              '$charRace',
-              style: contentText,
-            ),
-            const Divider(),
-            const Text(
-              'Class',
-              style: headerText,
-            ),
-            Text(
-              '$charClass',
-              style: contentText,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    const Text(
+                      'Race',
+                      style: headerText,
+                    ),
+                    Text(
+                      '$charRace',
+                      style: contentText,
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    const Text(
+                      'Class',
+                      style: headerText,
+                    ),
+                    Text(
+                      '$charClass',
+                      style: contentText,
+                    ),
+                  ],
+                )
+              ],
             ),
             const Divider(),
             abilityScoresRow(),
@@ -1168,6 +1443,14 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
                   child: ElevatedButton(
                     onPressed: () {
                       log('go back');
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: CreateCharacter3(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                            inheritTheme: true,
+                            ctx: context),
+                      );
                     },
                     style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                     child: const Text('BACK', style: TextStyle(color: Colors.white),),
@@ -1180,6 +1463,7 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
                     onPressed: () {
                       log('finish character');
                       character.name = characterNameController.text.toString();
+                      character.abilityScores = abilityScores;
                       FirebaseCRUD.addNewCharacter(character: character);
                     },
                     style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
@@ -1196,13 +1480,14 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(widget.title),
       ),
       body: ListView(
         children: [
           Column(
             children: [
-              SizedBox(height:555, child: characterDetails()),
+              SizedBox(height: 575, child: characterDetails()),
               Padding(padding: const EdgeInsets.all(24), child: setName()),
             ],
           )

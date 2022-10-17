@@ -95,7 +95,7 @@ class FirebaseCRUD {
       }
     });
 
-    String abilityScores = character.abilityScores![0].toString() +
+    String abilityScores = character.abilityScores![0].toString() + ',' +
         character.abilityScores![1].toString() + ',' +
         character.abilityScores![2].toString() + ',' +
         character.abilityScores![3].toString() + ',' +
@@ -194,7 +194,8 @@ class FirebaseCRUD {
         charClass: charClass,
         race: race,
         level: charLevel,
-        subclass: subClass
+        subclass: subClass,
+        abilityScores: snapshotCharacter['abilityScores'],
     );
 
     return character;
