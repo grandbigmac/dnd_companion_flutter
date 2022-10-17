@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
+import 'models/background.dart';
 import 'models/character.dart';
 import 'models/class.dart';
 import 'models/feature.dart';
@@ -1027,17 +1028,19 @@ class _ChooseAbilityScores extends State<CreateCharacter3> {
                   height: 35,
                   width: 140,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       log('go back');
                       for (int i = 0; i < scores.length; i++) {
                         log(scores[i].toString());
                       }
+
+                      List<Background> backgroundList = await FirebaseCRUD.getBackgrounds();
+
                       Navigator.push(
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: CreateCharacter4(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores,),
-
+                            child: CreateCharacter5(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList,),
                             inheritTheme: true,
                             ctx: context),
                       );
@@ -1092,14 +1095,264 @@ class _ChooseAbilityScores extends State<CreateCharacter3> {
   }
 }
 
-//CHOOSE NAME AND FINALISE
-class CreateCharacter4 extends StatefulWidget {
-  const CreateCharacter4({super.key, required this.title, required this.races, required this.classes, required this.character, required this.scores});
+//CHOOSE BACKGROUND AND PROFICIENCIES
+class CreateCharacter5 extends StatefulWidget {
+  const CreateCharacter5({super.key, required this.title, required this.races, required this.classes, required this.character, required this.scores, required this.backgrounds});
   final String title;
   final List<Race> races;
   final List<Class> classes;
   final Character character;
   final List<int> scores;
+  final List<Background> backgrounds;
+
+  @override
+  State<CreateCharacter5> createState() => _ChooseBackgroundAndProficiencies();
+}
+class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
+
+  String selectedBackground = '--';
+
+  @override
+  Widget build(BuildContext context) {
+    Character character = widget.character;
+    List<Background> backgroundList = widget.backgrounds;
+    List<Race> raceList = widget.races;
+    List<Class> classList = widget.classes;
+    List<int> scores = widget.scores;
+
+    Widget buttonRow() {
+
+      return Container(
+        width: double.infinity,
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  height: 35,
+                  width: 140,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      log('go back');
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: CreateCharacter3(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                            inheritTheme: true,
+                            ctx: context),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+                    child: const Text('BACK', style: TextStyle(color: Colors.white),),
+                  ),
+                ),
+                SizedBox(
+                  height: 35,
+                  width: 140,
+                  child: ElevatedButton(
+                    onPressed: () {
+
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: CreateCharacter4(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList,),
+                            inheritTheme: true,
+                            ctx: context),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+                    child: const Text('CONTINUE', style: TextStyle(color: Colors.white),),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      );
+    }
+
+    Column dropDownBackground() {
+      List<String> backgroundNames = [];
+      backgroundNames.add('--');
+      for (Background i in backgroundList) {
+        backgroundNames.add(i.name!);
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Background',
+            style: headerText,
+          ),
+          DropdownButton(
+            isExpanded: true,
+            value: selectedBackground,
+            icon: const Icon(Icons.arrow_drop_down_outlined),
+            elevation: 16,
+            style: contentText,
+            underline: Container(
+              height: 2,
+              color: Colors.blue,
+            ),
+            onChanged: (String? value) {
+              log('changing state');
+              setState(() {
+                log('changing state');
+                selectedBackground = value!;
+              });
+            },
+            items: backgroundNames.map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        ],
+      );
+    }
+
+    Widget _pageHead = Column(
+      children: const [
+        Text(
+          'Backgrounds give your character extra proficiencies and equipment, select one from the dropdown to see what they provide.',
+          style: contentText,
+        ),
+        Divider(),
+      ],
+    );
+
+    Widget backgroundContent() {
+      if (selectedBackground != '--') {
+        Background chosenBackground = Background();
+        for (Background i in backgroundList) {
+          if (i.name == selectedBackground) {
+            chosenBackground = Background(name: i.name, toolProf: i.toolProf, skillProf: i.skillProf, languages: i.languages, description: i.description);
+          }
+        }
+
+        String toolProficiencies = '';
+        String skillProficiencies = '';
+        String languages = '';
+        String name = chosenBackground.name!;
+        String description = chosenBackground.description!;
+
+        //setting tool proficiency string
+        for (int i = 0; i < chosenBackground.toolProf!.length; i++) {
+          if (i == 0) {
+            toolProficiencies = chosenBackground.toolProf![i];
+          }
+          else {
+            toolProficiencies = '$toolProficiencies, ${chosenBackground.toolProf![i]}';
+          }
+        }
+        //setting skill proficiency string
+        for (int i = 0; i < chosenBackground.skillProf!.length; i++) {
+          if (i == 0) {
+            skillProficiencies = chosenBackground.skillProf![i];
+          }
+          else {
+            skillProficiencies = '$skillProficiencies, ${chosenBackground.skillProf![i]}';
+          }
+        }
+        //setting languages string
+        for (int i = 0; i < chosenBackground.languages!.length; i++) {
+          if (i == 0) {
+            languages = chosenBackground.languages![i];
+          }
+          else {
+            languages = '$languages, ${chosenBackground.languages![i]}';
+          }
+        }
+
+        return Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Description',
+                style: headerText,
+              ),
+              Text(
+                description,
+                style: contentText,
+              ),
+              const Divider(),
+              const Text(
+                'Skill Proficiencies',
+                style: headerText,
+              ),
+              Text(
+                skillProficiencies,
+                style: contentText,
+              ),
+              const Divider(),
+              const Text(
+                'Tool Proficiencies',
+                style: headerText,
+              ),
+              Text(
+                toolProficiencies,
+                style: contentText,
+              ),
+              const Divider(),
+              const Text(
+                'Languages',
+                style: headerText,
+              ),
+              Text(
+                languages,
+                style: contentText,
+              ),
+              const Divider(),
+            ],
+          ),
+        );
+      }
+      else {
+        return Container();
+      }
+    }
+
+
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(widget.title),
+      ),
+      body: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                buttonRow(),
+                const Divider(),
+                _pageHead,
+                dropDownBackground(),
+                backgroundContent()
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+//CHOOSE NAME AND FINALISE
+class CreateCharacter4 extends StatefulWidget {
+  const CreateCharacter4({super.key, required this.title, required this.races, required this.classes, required this.character, required this.scores, required this.backgrounds});
+  final String title;
+  final List<Race> races;
+  final List<Class> classes;
+  final Character character;
+  final List<int> scores;
+  final List<Background> backgrounds;
 
   @override
   State<CreateCharacter4> createState() => _ChooseNameAndReview();
@@ -1117,6 +1370,8 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
     List<String> stringMods = [];
     List<Race> raceList = widget.races;
     List<Class> classList = widget.classes;
+    List<int> scores = widget.scores;
+    List<Background> backgrounds = widget.backgrounds;
 
     Container characterDetails() {
       String charClass = character.charClass!.name!;
@@ -1447,7 +1702,7 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: CreateCharacter3(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                            child: CreateCharacter5(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgrounds,),
                             inheritTheme: true,
                             ctx: context),
                       );

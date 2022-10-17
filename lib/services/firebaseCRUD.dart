@@ -6,6 +6,7 @@ import 'package:dnd_app_flutter/models/level.dart';
 import 'package:dnd_app_flutter/models/subclass.dart';
 import 'package:dnd_app_flutter/models/user.dart';
 
+import '../models/background.dart';
 import '../models/class.dart';
 import '../models/feature.dart';
 import '../models/race.dart';
@@ -251,5 +252,25 @@ class FirebaseCRUD {
     }
 
     return featureList;
+  }
+
+  static Future<List<Background>> getBackgrounds() async {
+    List<Background> backgroundList = [];
+
+    //Query for race features
+    final querySnapshotRace = await FirebaseFirestore.instance.collection('backgrounds').get();
+
+    for (var doc in querySnapshotRace.docs) {
+      String name = doc.get('name');
+      String description = doc.get('description');
+      List<String> skillProfs = doc.get('skillProf').split(',');
+      List<String> toolProfs = doc.get('toolProf').split(',');
+      List<String> languages = doc.get('languages').split(',');
+
+      backgroundList.add(Background(name: name, skillProf: skillProfs, toolProf: toolProfs, languages: languages, description: description));
+    }
+
+
+    return backgroundList;
   }
 }
