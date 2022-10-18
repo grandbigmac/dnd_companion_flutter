@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dnd_app_flutter/models/character.dart';
 import 'package:dnd_app_flutter/models/level.dart';
+import 'package:dnd_app_flutter/models/skills_languages_tools.dart';
 import 'package:dnd_app_flutter/models/subclass.dart';
 import 'package:dnd_app_flutter/models/user.dart';
 
@@ -59,7 +60,9 @@ class FirebaseCRUD {
     for (var doc in querySnapshotClass.docs) {
       String className = doc.get('name');
       String description = doc.get('description');
+      int skillCount = doc.get('skills');
 
+      //Get class features
       List<Feature> classFeatures = [];
 
       final featureQuery = await FirebaseFirestore.instance.collection('classes').doc(doc.id).collection('features').get();
@@ -72,8 +75,40 @@ class FirebaseCRUD {
         classFeatures.add(Feature(name: name, effect: effect, source: source, levelReq: levelReq));
       }
 
+      //Get class weapon proficiencies
+      List<String> weaponProfs = [];
+      final weaponQuery = await FirebaseFirestore.instance.collection('classes').doc(doc.id).collection('weaponProfs').get();
+      for (var doc in weaponQuery.docs) {
+        String name = doc.get('name');
+        weaponProfs.add(name);
+      }
 
-      classes.add(Class(name: className, featureList: classFeatures, description: description));
+      //Get class armour proficiencies (collection might not exist)
+      List<String> armourProfs = [];
+      try {
+        final armourQuery = await FirebaseFirestore.instance.collection('classes').doc(doc.id).collection('armourProfs').get();
+        for (var doc in armourQuery.docs) {
+          String name = doc.get('name');
+          armourProfs.add(name);
+        }
+      } catch (e) {
+        log('no armour proficiencies');
+      }
+
+      //Get class tool proficiencies (collection might not exist)
+      List<String> toolProfs = [];
+      try {
+        final armourQuery = await FirebaseFirestore.instance.collection('classes').doc(doc.id).collection('toolProfs').get();
+        for (var doc in armourQuery.docs) {
+          String name = doc.get('name');
+          toolProfs.add(name);
+        }
+      } catch (e) {
+        log('no tool proficiencies');
+      }
+
+
+      classes.add(Class(name: className, featureList: classFeatures, description: description, skillCount: skillCount, weaponProfs: weaponProfs, toolProfs: toolProfs, armourProfs: armourProfs));
     }
 
     return classes;
@@ -82,8 +117,8 @@ class FirebaseCRUD {
   static Future<Response> addNewCharacter({
     required Character character,
   }) async {
-    //GET THE CHARACTER AND RACE STRINGS FROM THEIR DOC ID'S
-    String raceString = '', classString = '';
+    //GET THE CHARACTER, RACE AND BACKGROUND STRINGS FROM THEIR DOC ID'S
+    String raceString = '', classString = '', backgroundString = '';
 
     await FirebaseFirestore.instance.collection('races').where('name', isEqualTo: character.race!.name).get().then((value) {
       for (var i in value.docs) {
@@ -95,6 +130,11 @@ class FirebaseCRUD {
         classString = i.id;
       }
     });
+    await FirebaseFirestore.instance.collection('backgrounds').where('name', isEqualTo: character.background!.name).get().then((value) {
+      for (var i in value.docs) {
+        backgroundString = i.id;
+      }
+    });
 
     String abilityScores = character.abilityScores![0].toString() + ',' +
         character.abilityScores![1].toString() + ',' +
@@ -103,6 +143,61 @@ class FirebaseCRUD {
         character.abilityScores![4].toString() + ',' +
         character.abilityScores![5].toString();
 
+    //Create the list of skill proficiencies held by this character
+    String proficiencies = '';
+    List<String> profListSkills = [];
+
+    List<String> backgroundProfsSkills = character.background!.skillProf!;
+    for(String i in backgroundProfsSkills) {
+      profListSkills.add(i);
+    }
+    List<String> classProfsSkills = character.proficiencies!;
+    for (String i in classProfsSkills) {
+      profListSkills.add(i);
+    }
+
+    for (int i = 0; i < profListSkills!.length; i++) {
+      if (i == 0) {
+        proficiencies = profListSkills[i];
+      } else {
+        proficiencies = '$proficiencies,${profListSkills[i]}';
+      }
+    }
+
+
+    //Create the list of language proficiencies held by this character
+    String proficienciesLang = '';
+    List<String> profListLang = [];
+
+    List<String> backgroundProfsLang = character.background!.languages!;
+    for(String i in backgroundProfsLang) {
+      profListLang.add(i);
+    }
+
+    for (int i = 0; i < profListLang!.length; i++) {
+      if (i == 0) {
+        proficienciesLang = profListLang[i];
+      } else {
+        proficienciesLang = '$proficienciesLang,${profListLang[i]}';
+      }
+    }
+
+    //Create the list of tool proficiencies held by this character
+    String proficienciesTool = '';
+    List<String> profListTool = [];
+
+    List<String> backgroundProfsTool = character.background!.toolProf!;
+    for(String i in backgroundProfsTool) {
+      profListTool.add(i);
+    }
+
+    for (int i = 0; i < profListTool!.length; i++) {
+      if (i == 0) {
+        proficienciesTool = profListTool[i];
+      } else {
+        proficienciesTool = '$proficienciesTool,${profListTool[i]}';
+      }
+    }
 
     Response response = Response();
     CollectionReference collection = FirebaseFirestore.instance.collection('characters');
@@ -115,6 +210,11 @@ class FirebaseCRUD {
       'class': classString,
       'subclass': '',
       'abilityScores': abilityScores,
+      'background': backgroundString,
+      'proficiencies': proficiencies,
+      'toolProfs': proficienciesTool,
+      'languages': proficienciesLang,
+      'profBonus': 2,
     };
 
     var result = await documentReference

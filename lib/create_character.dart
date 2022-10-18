@@ -485,6 +485,14 @@ State<CreateCharacter2> createState() => _ChooseClassState();
 class _ChooseClassState extends State<CreateCharacter2> {
   String selectedClass = '--';
   Class charClass = Class(name: '--');
+  String selectedSkill1 = '--';
+  bool ss1 = false;
+  String selectedSkill2 = '--';
+  bool ss2 = false;
+  String selectedSkill3 = '--';
+  bool ss3 = false;
+  String selectedSkill4 = '--';
+  bool ss4 = false;
 
   @override
   Widget build(BuildContext context) {
@@ -529,11 +537,239 @@ class _ChooseClassState extends State<CreateCharacter2> {
       );
     }
 
+    //dropdown builders for selecting skills
+    Widget dd(int count, List<String> content) {
+      Widget widget = Container();
+
+      if (count == 1) {
+        ss1 = true;
+        widget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButton(
+              isExpanded: true,
+              value: selectedSkill1,
+              icon: const Icon(Icons.arrow_drop_down_outlined),
+              elevation: 16,
+              style: contentText,
+              underline: Container(
+                height: 2,
+                color: Colors.blue,
+              ),
+              onChanged: (String? value) {
+                log('changing state');
+                if (value == selectedSkill2 || value == selectedSkill3 || value == selectedSkill4) {
+                  SnackBar snackBar = const SnackBar(
+                    content: Text(
+                      'This skill is already selected!',
+                    ),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
+                }
+                setState(() {
+                  log('changing state');
+                  selectedSkill1 = value!;
+                });
+              },
+              items: content.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      }
+      else if (count == 2) {
+        ss2 = true;
+        widget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButton(
+              isExpanded: true,
+              value: selectedSkill2,
+              icon: const Icon(Icons.arrow_drop_down_outlined),
+              elevation: 16,
+              style: contentText,
+              underline: Container(
+                height: 2,
+                color: Colors.blue,
+              ),
+              onChanged: (String? value) {
+                log('changing state');
+                if (value == selectedSkill1 || value == selectedSkill3 || value == selectedSkill4) {
+                  SnackBar snackBar = const SnackBar(
+                    content: Text(
+                      'This skill is already selected!',
+                    ),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
+                }
+                setState(() {
+                  log('changing state');
+                  selectedSkill2 = value!;
+                });
+              },
+              items: content.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      }
+      else if (count == 3) {
+        ss3 = true;
+        widget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButton(
+              isExpanded: true,
+              value: selectedSkill3,
+              icon: const Icon(Icons.arrow_drop_down_outlined),
+              elevation: 16,
+              style: contentText,
+              underline: Container(
+                height: 2,
+                color: Colors.blue,
+              ),
+              onChanged: (String? value) {
+                log('changing state');
+                if (value == selectedSkill1 || value == selectedSkill2 || value == selectedSkill4) {
+                  SnackBar snackBar = const SnackBar(
+                    content: Text(
+                      'This skill is already selected!',
+                    ),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
+                }
+                setState(() {
+                  log('changing state');
+                  selectedSkill3 = value!;
+                });
+              },
+              items: content.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      }
+      else if (count == 4) {
+        ss4 = true;
+        widget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButton(
+              isExpanded: true,
+              value: selectedSkill4,
+              icon: const Icon(Icons.arrow_drop_down_outlined),
+              elevation: 16,
+              style: contentText,
+              underline: Container(
+                height: 2,
+                color: Colors.blue,
+              ),
+              onChanged: (String? value) {
+                log('changing state');
+                if (value == selectedSkill1 || value == selectedSkill2 || value == selectedSkill3) {
+                  SnackBar snackBar = const SnackBar(
+                    content: Text(
+                      'This skill is already selected!',
+                    ),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
+                }
+                setState(() {
+                  log('changing state');
+                  selectedSkill4 = value!;
+                });
+              },
+              items: content.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ],
+        );
+      }
+      return widget;
+    }
+
+    Widget skillProficienciesWithChoices(int count) {
+      List<Widget> widgets = [];
+      //get possible skills, tools and languages from the model
+      List<String> skills = sk.skills;
+
+      for (int i = 0; i < count + 1; i++) {
+        widgets.add(dd(i, skills));
+      }
+      return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: widgets
+      );
+    }
+
+
     Container classInformation(Class chosenClass) {
       if (chosenClass.name != '--') {
         List<Feature> features = chosenClass.featureList!;
         String name = chosenClass.name!;
         String description = chosenClass.description!;
+        String weaponString = '';
+        int skillCount = chosenClass.skillCount!;
+        for (int i = 0; i < chosenClass.weaponProfs!.length; i++) {
+          if (i == 0) {
+            weaponString = chosenClass.weaponProfs![i];
+          }
+          else {
+            weaponString = '$weaponString, ${chosenClass.weaponProfs![i]}';
+          }
+        }
+        String armorString = '';
+        if (chosenClass.armourProfs!.isEmpty) {
+          armorString = 'No armour proficiencies!';
+        }
+        else {
+          for (int i = 0; i < chosenClass.armourProfs!.length; i++) {
+            if (i == 0) {
+              armorString = chosenClass.armourProfs![i];
+            }
+            else {
+              armorString = '$armorString, ${chosenClass.armourProfs![i]}';
+            }
+          }
+        }
+        String toolString = '';
+        if (chosenClass.toolProfs!.isEmpty) {
+          toolString = 'No tool proficiencies!';
+        }
+        else {
+          for (int i = 0; i < chosenClass.toolProfs!.length; i++) {
+            if (i == 0) {
+              toolString = chosenClass.toolProfs![i];
+            }
+            else {
+              toolString = '$toolString, ${chosenClass.toolProfs![i]}';
+            }
+          }
+        }
 
         return Container(
           padding: const EdgeInsets.all(24),
@@ -559,6 +795,43 @@ class _ChooseClassState extends State<CreateCharacter2> {
                   ),
                   Text(
                     description,
+                    style: contentText,
+                  ),
+                  const Divider(),
+                  const Text(
+                    'Skill Proficiencies',
+                    style: headerText,
+                  ),
+                  Text(
+                    'You can choose up to $skillCount skill proficiencies.',
+                    style: contentText,
+                  ),
+                  skillProficienciesWithChoices(skillCount),
+                  const Divider(),
+                  const Text(
+                    'Weapon Proficiencies',
+                    style: headerText,
+                  ),
+                  Text(
+                    weaponString,
+                    style: contentText,
+                  ),
+                  const Divider(),
+                  const Text(
+                    'Armor Proficiencies',
+                    style: headerText,
+                  ),
+                  Text(
+                    armorString,
+                    style: contentText,
+                  ),
+                  const Divider(),
+                  const Text(
+                    'Tool Proficiencies',
+                    style: headerText,
+                  ),
+                  Text(
+                    toolString,
                     style: contentText,
                   ),
                   const Divider(),
@@ -698,7 +971,22 @@ class _ChooseClassState extends State<CreateCharacter2> {
                                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                     return;
                                   }
+                                  //add skill proficiency string to the character
+                                  List<bool> b = [ss1, ss2, ss3, ss4];
+                                  List<String> s = [selectedSkill1, selectedSkill2, selectedSkill3, selectedSkill4];
+                                  List<String> profs = [];
+                                  for (int i = 0; i < b.length; i++) {
+                                    if (b[i]) {
+                                      profs.add(s[i]);
+                                    }
+                                  }
+
                                   character.charClass = charClass;
+                                  character.proficiencies = profs;
+
+                                  for (String i in character.proficiencies!) {
+                                    log(i);
+                                  }
 
                                   Navigator.push(
                                     context,
@@ -1195,8 +1483,45 @@ class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
                           }
                         }
                       }
+                      //Now, clear the background's proficiencies where there is a ? and build the chosen options
+                      List<String> skill = [];
+                      List<String> tool = [];
+                      List<String> lang = [];
+                      for (int i = 0; i < chosenBackground.skillProf!.length; i++) {
+                        if (chosenBackground.skillProf![i] != '?') {
+                          skill.add(chosenBackground.skillProf![i]);
+                        }
+                      }
+                      for (int i = 0; i < chosenBackground.languages!.length; i++) {
+                        if (chosenBackground.languages![i] != '?') {
+                          lang.add(chosenBackground.languages![i]);
+                        }
+                      }
+                      for (int i = 0; i < chosenBackground.toolProf!.length; i++) {
+                        if (chosenBackground.toolProf![i] != '?') {
+                          tool.add(chosenBackground.toolProf![i]);
+                        }
+                      }
+                      //replace the background's proficiencies with the new list
+                      chosenBackground.skillProf = skill;
+                      chosenBackground.toolProf = tool;
+                      chosenBackground.languages = lang;
 
+                      for (int i = 0; i < booleans.length; i++) {
+                        if (booleans[i]) {
+                          if (i == 0 || i == 1) {
+                            chosenBackground.skillProf!.add(values[i]);
+                          }
+                          else if (i == 2 || i == 3) {
+                            chosenBackground.toolProf!.add(values[i]);
+                          }
+                          else if (i == 4 || i == 5) {
+                            chosenBackground.languages!.add(values[i]);
+                          }
+                        }
+                      }
 
+                      character.background = chosenBackground;
                       Navigator.push(
                         context,
                         PageTransition(
@@ -1261,6 +1586,7 @@ class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
 
     Widget dd(String type, int count, List<String> content) {
       Widget widget = Container();
+      List<String> currentProfs = character.proficiencies!;
 
       if (type == 'skill') {
         if (count == 1) {
@@ -1280,6 +1606,16 @@ class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
                 ),
                 onChanged: (String? value) {
                   log('changing state');
+                  if (value == selectedSkill2 || currentProfs.contains(value)) {
+                    SnackBar snackBar = const SnackBar(
+                      content: Text(
+                        'This skill is already selected!',
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
                   setState(() {
                     log('changing state');
                     selectedSkill1 = value!;
@@ -1312,6 +1648,16 @@ class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
                 ),
                 onChanged: (String? value) {
                   log('changing state');
+                  if (value == selectedSkill1 || currentProfs.contains(value)) {
+                    SnackBar snackBar = const SnackBar(
+                      content: Text(
+                        'This skill is already selected!',
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
                   setState(() {
                     log('changing state');
                     selectedSkill2 = value!;
@@ -1346,6 +1692,16 @@ class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
                 ),
                 onChanged: (String? value) {
                   log('changing state');
+                  if (value == selectedTool2) {
+                    SnackBar snackBar = const SnackBar(
+                      content: Text(
+                        'This tool is already selected!',
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
                   setState(() {
                     log('changing state');
                     selectedTool1 = value!;
@@ -1378,6 +1734,16 @@ class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
                 ),
                 onChanged: (String? value) {
                   log('changing state');
+                  if (value == selectedTool1) {
+                    SnackBar snackBar = const SnackBar(
+                      content: Text(
+                        'This tool is already selected!',
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
                   setState(() {
                     log('changing state');
                     selectedTool2 = value!;
@@ -1412,6 +1778,16 @@ class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
                 ),
                 onChanged: (String? value) {
                   log('changing state');
+                  if (value == selectedLanguage2) {
+                    SnackBar snackBar = const SnackBar(
+                      content: Text(
+                        'This language is already selected!',
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
                   setState(() {
                     log('changing state');
                     selectedLanguage1 = value!;
@@ -1444,6 +1820,16 @@ class _ChooseBackgroundAndProficiencies extends State<CreateCharacter5> {
                 ),
                 onChanged: (String? value) {
                   log('changing state');
+                  if (value == selectedLanguage1) {
+                    SnackBar snackBar = const SnackBar(
+                      content: Text(
+                        'This language is already selected!',
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    return;
+                  }
                   setState(() {
                     log('changing state');
                     selectedLanguage2 = value!;
@@ -1728,7 +2114,7 @@ class _ChooseNameAndReview extends State<CreateCharacter4> {
 
         List<String> racialIncrease = [];
         if (character.race!.asi!.contains(",")){
-          racialIncrease = character.race!.asi!.split(',');
+          racialIncrease = character.race!.asi!.split(', ');
 
           for (int i = 0; i < racialIncrease.length; i++) {
             int number;
