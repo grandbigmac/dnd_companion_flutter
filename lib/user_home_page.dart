@@ -1,13 +1,16 @@
 import 'dart:developer';
 
+import 'package:dnd_app_flutter/character_creation/choose_race.dart';
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
 import 'package:dnd_app_flutter/style/textstyles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'models/character.dart';
 import 'models/class.dart';
 import 'models/feature.dart';
+import 'models/race.dart';
 late Character activeCharacter;
 
 class UserHomePage extends StatefulWidget {
@@ -33,13 +36,71 @@ class _UserHomePageState extends State<UserHomePage> {
           children: [
             SizedBox(
               height: 35,
-              width: 140,
+              width: 250,
+              child: ElevatedButton(
+                onPressed: () async {
+                  //Show a loading progress indicator
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => Center(child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            color: Colors.white,
+                            border: Border.all(color: Colors.blue, width: 2),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                'Loading Race and Class data ...',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Roboto',
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),),
+                  );
+
+                  List<Race> raceList = await FirebaseCRUD.getRaces();
+                  List<Class> classList = await FirebaseCRUD.getClasses();
+
+
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.bottomToTop,
+                        child: ChooseRace(title: 'Choose Race', races: raceList, classes: classList, character: Character(), activeChar: activeCharacter,),
+                        inheritTheme: true,
+                        ctx: context),
+                  );
+                },
+                style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+                child: const Text('CREATE A CHARACTER', style: TextStyle(color: Colors.white),),
+              ),
+            ),
+            SizedBox(
+              height: 35,
+              width: 250,
               child: ElevatedButton(
                 onPressed: () {
                   //buttons
                 },
                 style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-                child: const Text('CONTINUE', style: TextStyle(color: Colors.white),),
+                child: const Text('SELECT ACTIVE CHARACTER', style: TextStyle(color: Colors.white),),
               ),
             ),
           ],
@@ -49,6 +110,7 @@ class _UserHomePageState extends State<UserHomePage> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(widget.title),
       ),
       body: ListView(

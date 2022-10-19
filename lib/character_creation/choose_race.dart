@@ -14,15 +14,17 @@ import '../models/class.dart';
 import '../models/feature.dart';
 import '../models/race.dart';
 import '../models/skills_languages_tools.dart' as sk;
+import '../user_home_page.dart';
 import 'choose_class.dart';
 
 //CHOOSE A RACE
 class ChooseRace extends StatefulWidget {
-  const ChooseRace({super.key, required this.title, required this.races, required this.classes, required this.character});
+  const ChooseRace({super.key, required this.title, required this.races, required this.classes, required this.character, required this.activeChar});
   final String title;
   final List<Race> races;
   final List<Class> classes;
   final Character character;
+  final Character activeChar;
 
   @override
   State<ChooseRace> createState() => _ChooseRaceState();
@@ -36,6 +38,7 @@ class _ChooseRaceState extends State<ChooseRace> {
 
   @override
   Widget build(BuildContext context) {
+    Character activeChar = widget.activeChar;
     List<Race> raceList = widget.races;
     List<Class> classList = widget.classes;
     Character character = widget.character;
@@ -370,6 +373,7 @@ class _ChooseRaceState extends State<ChooseRace> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(widget.title),
       ),
       body: ListView(
@@ -398,6 +402,14 @@ class _ChooseRaceState extends State<ChooseRace> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     log('go back');
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          type: PageTransitionType.bottomToTop,
+                                          child: UserHomePage(title: 'Home Page', activeCharacter: activeChar,),
+                                          inheritTheme: true,
+                                          ctx: context),
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                                   child: const Text('BACK', style: TextStyle(color: Colors.white),),
@@ -431,7 +443,7 @@ class _ChooseRaceState extends State<ChooseRace> {
                                       context,
                                       PageTransition(
                                           type: PageTransitionType.rightToLeft,
-                                          child: ChooseClass(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                                          child: ChooseClass(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar,),
                                           inheritTheme: true,
                                           ctx: context),
                                     );

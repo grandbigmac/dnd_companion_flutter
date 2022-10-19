@@ -293,6 +293,14 @@ class FirebaseCRUD {
     //Create class object
     charClass = Class(name: snapshotClass['name'], description: snapshotClass['description']);
 
+    //Convert ability scores string into a list
+    String abilityScoresString = snapshotCharacter['abilityScores'];
+    List<String> aS = abilityScoresString.split(',');
+    List<int> abilityScores = [];
+    for (String i in aS) {
+      abilityScores.add(int.parse(i));
+    }
+
     //Create Character object
     character = Character(
         name: snapshotCharacter['name'],
@@ -300,7 +308,7 @@ class FirebaseCRUD {
         race: race,
         level: charLevel,
         subclass: subClass,
-        abilityScores: snapshotCharacter['abilityScores'],
+        abilityScores: abilityScores,
     );
 
     return character;

@@ -15,17 +15,19 @@ import '../models/class.dart';
 import '../models/feature.dart';
 import '../models/race.dart';
 import '../models/skills_languages_tools.dart' as sk;
+import '../user_home_page.dart';
 import 'choose_background.dart';
 
 //CHOOSE NAME AND FINALISE
 class ReviewNewCharacter extends StatefulWidget {
-  const ReviewNewCharacter({super.key, required this.title, required this.races, required this.classes, required this.character, required this.scores, required this.backgrounds});
+  const ReviewNewCharacter({super.key, required this.title, required this.races, required this.classes, required this.activeChar, required this.character, required this.scores, required this.backgrounds});
   final String title;
   final List<Race> races;
   final List<Class> classes;
   final Character character;
   final List<int> scores;
   final List<Background> backgrounds;
+  final Character activeChar;
 
   @override
   State<ReviewNewCharacter> createState() => _ChooseNameAndReview();
@@ -36,6 +38,7 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
 
   @override
   Widget build(BuildContext context) {
+    Character activeChar = widget.activeChar;
     Character character = widget.character;
     //STR, DEX, CON, INT, WIS, CHA
     newScores = widget.scores;
@@ -528,7 +531,7 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: abilityScores, backgrounds: backgrounds,),
+                            child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: abilityScores, backgrounds: backgrounds, activeChar: activeChar,),
                             inheritTheme: true,
                             ctx: context),
                       );
@@ -557,7 +560,7 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: LaunchPage(title: 'Launching...',),
+                            child: UserHomePage(title: 'Home Page', activeCharacter: activeChar,),
                             inheritTheme: true,
                             ctx: context),
                       );

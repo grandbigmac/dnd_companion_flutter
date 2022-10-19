@@ -20,11 +20,12 @@ import 'choose_class.dart';
 
 //CHOOSE ABILITY SCORES
 class ChooseAbilityScores extends StatefulWidget {
-  const ChooseAbilityScores({super.key, required this.title, required this.races, required this.classes, required this.character});
+  const ChooseAbilityScores({super.key, required this.title, required this.races, required this.classes, required this.character, required this.activeChar});
   final String title;
   final List<Race> races;
   final List<Class> classes;
   final Character character;
+  final Character activeChar;
 
   @override
   State<ChooseAbilityScores> createState() => _ChooseAbilityScores();
@@ -40,6 +41,7 @@ class _ChooseAbilityScores extends State<ChooseAbilityScores> {
 
   @override
   Widget build(BuildContext context) {
+    Character activeChar = widget.activeChar;
     Character character = widget.character;
     List<Race> raceList = widget.races;
     List<Class> classList = widget.classes;
@@ -311,7 +313,7 @@ class _ChooseAbilityScores extends State<ChooseAbilityScores> {
                           context,
                           PageTransition(
                               type: PageTransitionType.rightToLeft,
-                              child: ChooseClass(title: 'Create a New Character', races: raceList, classes: classList, character: character,),
+                              child: ChooseClass(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar,),
                               inheritTheme: true,
                               ctx: context),
                         );
@@ -336,7 +338,7 @@ class _ChooseAbilityScores extends State<ChooseAbilityScores> {
                           context,
                           PageTransition(
                               type: PageTransitionType.rightToLeft,
-                              child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList,),
+                              child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList, activeChar: activeChar,),
                               inheritTheme: true,
                               ctx: context),
                         );
@@ -356,6 +358,7 @@ class _ChooseAbilityScores extends State<ChooseAbilityScores> {
 
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Text(widget.title),
         ),
         body: Column(
