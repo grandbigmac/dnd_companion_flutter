@@ -1,29 +1,13 @@
 import 'dart:developer';
 
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
+import 'package:dnd_app_flutter/style/textstyles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'models/character.dart';
 import 'models/class.dart';
 import 'models/feature.dart';
-
-TextStyle titleStyle = const TextStyle(
-  color: Colors.red,
-  fontSize: 20,
-  fontFamily: 'Roboto',
-);
-const TextStyle contentText = TextStyle(
-  fontSize: 14,
-  fontFamily: 'Roboto',
-  color: Color(0xFF455566),
-);
-const TextStyle headerText = TextStyle(
-  fontSize: 12,
-  fontFamily: 'Roboto',
-  color: Color(0xFF329BD9),
-);
-
 late Character activeCharacter;
 
 class UserHomePage extends StatefulWidget {

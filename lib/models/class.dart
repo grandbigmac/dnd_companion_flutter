@@ -5,6 +5,7 @@ import 'feature.dart';
 class Class {
   String? name;
   String? description;
+  int? hitDie;
   int? skillCount;
   List<Feature>? featureList;
   List<String>? armourProfs;
@@ -15,6 +16,7 @@ class Class {
     this.name,
     this.featureList,
     this.description,
+    this.hitDie,
     this.skillCount,
     this.armourProfs,
     this.weaponProfs,

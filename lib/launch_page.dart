@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:dnd_app_flutter/create_character.dart';
+import 'package:dnd_app_flutter/character_creation/choose_race.dart';
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
 import 'package:dnd_app_flutter/user_home_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -98,7 +98,7 @@ class _LaunchPageState extends State<LaunchPage> {
                       context,
                       PageTransition(
                           type: PageTransitionType.bottomToTop,
-                          child: CreateCharacter(title: 'Create a New Character', races: raceList, classes: classList, character: Character(),),
+                          child: ChooseRace(title: 'Create a New Character', races: raceList, classes: classList, character: Character(),),
                           inheritTheme: true,
                           ctx: context),
                     );

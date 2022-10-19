@@ -61,6 +61,7 @@ class FirebaseCRUD {
       String className = doc.get('name');
       String description = doc.get('description');
       int skillCount = doc.get('skills');
+      int hitDie = doc.get('hitDie');
 
       //Get class features
       List<Feature> classFeatures = [];
@@ -108,7 +109,7 @@ class FirebaseCRUD {
       }
 
 
-      classes.add(Class(name: className, featureList: classFeatures, description: description, skillCount: skillCount, weaponProfs: weaponProfs, toolProfs: toolProfs, armourProfs: armourProfs));
+      classes.add(Class(name: className, featureList: classFeatures, hitDie: hitDie, description: description, skillCount: skillCount, weaponProfs: weaponProfs, toolProfs: toolProfs, armourProfs: armourProfs));
     }
 
     return classes;
