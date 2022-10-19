@@ -154,7 +154,10 @@ class FirebaseCRUD {
     }
     List<String> classProfsSkills = character.proficiencies!;
     for (String i in classProfsSkills) {
-      profListSkills.add(i);
+      if (!profListSkills.contains(i)){
+        profListSkills.add(i);
+      }
+      //COULD PROMPT HERE TO SELECT ANOTHER IF THERE ARE DUPLICATES
     }
 
     for (int i = 0; i < profListSkills!.length; i++) {
@@ -172,7 +175,10 @@ class FirebaseCRUD {
 
     List<String> backgroundProfsLang = character.background!.languages!;
     for(String i in backgroundProfsLang) {
-      profListLang.add(i);
+      if (!profListLang.contains(i)){
+        profListLang.add(i);
+      }
+      //COULD PROMPT HERE TO SELECT ANOTHER IF THERE ARE DUPLICATES
     }
 
     for (int i = 0; i < profListLang!.length; i++) {
@@ -189,7 +195,10 @@ class FirebaseCRUD {
 
     List<String> backgroundProfsTool = character.background!.toolProf!;
     for(String i in backgroundProfsTool) {
-      profListTool.add(i);
+      if (!profListTool.contains(i)){
+        profListTool.add(i);
+      }
+      //COULD PROMPT HERE TO SELECT ANOTHER IF THERE ARE DUPLICATES
     }
 
     for (int i = 0; i < profListTool!.length; i++) {
