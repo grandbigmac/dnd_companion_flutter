@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'dart:developer';
 
+import 'package:dnd_app_flutter/launch_page.dart';
 import 'package:dnd_app_flutter/services/dice_rolls.dart';
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
 import 'package:dnd_app_flutter/style/textstyles.dart';
@@ -540,11 +541,26 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                   height: 35,
                   width: 140,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       log('finish character');
                       character.name = characterNameController.text.toString();
                       character.abilityScores = abilityScores;
-                      FirebaseCRUD.addNewCharacter(character: character);
+                      await FirebaseCRUD.addNewCharacter(character: character);
+                      SnackBar snackBar = SnackBar(
+                        content: Text(
+                          '${character.name!} added to characters!',
+                        ),
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: LaunchPage(title: 'Launching...',),
+                            inheritTheme: true,
+                            ctx: context),
+                      );
                     },
                     style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                     child: const Text('COMPLETE', style: TextStyle(color: Colors.white),),
