@@ -540,6 +540,23 @@ class _ChooseClassState extends State<ChooseClass> {
                                       log(i);
                                     }
 
+                                    List<bool> bl = [ss1, ss2, ss3, ss4];
+                                    List<String> values = [selectedSkill1, selectedSkill2, selectedSkill3, selectedSkill4];
+                                    for (int i = 0; i < bl.length; i++) {
+                                      if (bl[i]) {
+                                        if (values[i] == '--') {
+                                          SnackBar snackBar = const SnackBar(
+                                            content: Text(
+                                              'You haven\'t selected a proficiency!',
+                                            ),
+                                          );
+
+                                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                          return;
+                                        }
+                                      }
+                                    }
+
                                     Navigator.push(
                                       context,
                                       PageTransition(

@@ -373,6 +373,9 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
         log('DEX MOD: $dexMod');
         log('CON MOD: $conMod');
 
+        //set this hp to the character
+        character.hp = HP;
+
         //Now build the row
         widget = Container(
           padding: const EdgeInsets.all(24),

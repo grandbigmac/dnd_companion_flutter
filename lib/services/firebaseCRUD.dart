@@ -200,6 +200,8 @@ class FirebaseCRUD {
       }
     }
 
+    int hp = character.hp!;
+
     Response response = Response();
     CollectionReference collection = FirebaseFirestore.instance.collection('characters');
     DocumentReference documentReference = collection.doc();
@@ -216,6 +218,7 @@ class FirebaseCRUD {
       'toolProfs': proficienciesTool,
       'languages': proficienciesLang,
       'profBonus': 2,
+      'hp': hp,
     };
 
     var result = await documentReference
