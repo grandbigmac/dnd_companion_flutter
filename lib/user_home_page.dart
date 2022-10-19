@@ -119,6 +119,10 @@ class _UserHomePageState extends State<UserHomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Text(
+                  'Currently active character is: ${activeCharacter.name!}',
+                  style: contentText,
+                ),
                 tempHomePage(),
               ],
             ),
