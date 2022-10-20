@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'dart:developer';
 
+import 'package:dnd_app_flutter/character_creation/choose_spells.dart';
 import 'package:dnd_app_flutter/services/dice_rolls.dart';
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
 import 'package:dnd_app_flutter/style/textstyles.dart';
@@ -14,14 +15,16 @@ import '../models/class.dart';
 import '../models/feature.dart';
 import '../models/race.dart';
 import '../models/skills_languages_tools.dart' as sk;
+import '../models/spell.dart';
 import 'choose_ability_scores.dart';
 import 'choose_race.dart';
 
 //CHOOSE A CLASS
 class ChooseClass extends StatefulWidget {
-  const ChooseClass({super.key, required this.title, required this.races, required this.classes, required this.character, required this.activeChar});
+  const ChooseClass({super.key, required this.title, required this.races, required this.classes, required this.character, required this.activeChar, required this.backuprace});
   final String title;
   final List<Race> races;
+  final List<Race> backuprace;
   final List<Class> classes;
   final Character character;
   final Character activeChar;
@@ -45,6 +48,7 @@ class _ChooseClassState extends State<ChooseClass> {
   Widget build(BuildContext context) {
     Character activeChar = widget.activeChar;
     List<Race> raceList = widget.races;
+    List<Race> backupList = widget.backuprace;
     List<Class> classList = widget.classes;
     Character character = widget.character;
 
@@ -502,7 +506,7 @@ class _ChooseClassState extends State<ChooseClass> {
                                       context,
                                       PageTransition(
                                           type: PageTransitionType.rightToLeft,
-                                          child: ChooseRace(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar,),
+                                          child: ChooseRace(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar, backuplist: backupList,),
                                           inheritTheme: true,
                                           ctx: context),
                                     );
@@ -515,7 +519,7 @@ class _ChooseClassState extends State<ChooseClass> {
                                 height: 35,
                                 width: 140,
                                 child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (charClass.name == '--') {
                                       SnackBar snackBar = const SnackBar(
                                         content: Text(
@@ -560,14 +564,63 @@ class _ChooseClassState extends State<ChooseClass> {
                                       }
                                     }
 
-                                    Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          type: PageTransitionType.rightToLeft,
-                                          child: ChooseAbilityScores(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar,),
-                                          inheritTheme: true,
-                                          ctx: context),
-                                    );
+                                    //CHECK IF THE CLASS QUALIFIES AS A SPELLCASTER AND NAVIGATE TO THE SPELL SELECTION PAGE
+
+                                    if (charClass.spellcaster!) {
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) => Center(child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(16.0),
+                                                color: Colors.white,
+                                                border: Border.all(color: Colors.blue, width: 2),
+                                              ),
+                                              padding: const EdgeInsets.all(12),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: const [
+                                                  CircularProgressIndicator(),
+                                                  SizedBox(
+                                                    height: 20,
+                                                  ),
+                                                  Text(
+                                                    'Loading Spell data ...',
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontFamily: 'Roboto',
+                                                      color: Colors.blue,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),),
+                                      );
+                                      List<Spell> spells = await FirebaseCRUD.getCharacterCreationSpells(character.charClass!.name!);
+                                      Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            type: PageTransitionType.rightToLeft,
+                                            child: ChooseSpells(title: 'Create a New Character', spells: spells, races: raceList, classes: classList, character: character, activeChar: activeChar, backuplist: backupList,),
+                                            inheritTheme: true,
+                                            ctx: context),
+                                      );
+                                    }
+                                    else {
+                                      Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            type: PageTransitionType.rightToLeft,
+                                            child: ChooseAbilityScores(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar, backuplist: backupList,),
+                                            inheritTheme: true,
+                                            ctx: context),
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                                   child: const Text('CONTINUE', style: TextStyle(color: Colors.white),),

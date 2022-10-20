@@ -20,9 +20,10 @@ import 'choose_class.dart';
 
 //CHOOSE ABILITY SCORES
 class ChooseAbilityScores extends StatefulWidget {
-  const ChooseAbilityScores({super.key, required this.title, required this.races, required this.classes, required this.character, required this.activeChar});
+  const ChooseAbilityScores({super.key, required this.title, required this.races, required this.classes, required this.character, required this.activeChar, required this.backuplist});
   final String title;
   final List<Race> races;
+  final List<Race> backuplist;
   final List<Class> classes;
   final Character character;
   final Character activeChar;
@@ -44,6 +45,7 @@ class _ChooseAbilityScores extends State<ChooseAbilityScores> {
     Character activeChar = widget.activeChar;
     Character character = widget.character;
     List<Race> raceList = widget.races;
+    List<Race> backupList = raceList;
     List<Class> classList = widget.classes;
 
     Widget scoreDisplay = Container(
@@ -313,7 +315,7 @@ class _ChooseAbilityScores extends State<ChooseAbilityScores> {
                           context,
                           PageTransition(
                               type: PageTransitionType.rightToLeft,
-                              child: ChooseClass(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar,),
+                              child: ChooseClass(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar, backuprace: backupList,),
                               inheritTheme: true,
                               ctx: context),
                         );
@@ -338,7 +340,7 @@ class _ChooseAbilityScores extends State<ChooseAbilityScores> {
                           context,
                           PageTransition(
                               type: PageTransitionType.rightToLeft,
-                              child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList, activeChar: activeChar,),
+                              child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList, activeChar: activeChar, backuplist: backupList,),
                               inheritTheme: true,
                               ctx: context),
                         );

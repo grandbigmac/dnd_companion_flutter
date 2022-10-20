@@ -20,9 +20,10 @@ import 'choose_background.dart';
 
 //CHOOSE NAME AND FINALISE
 class ReviewNewCharacter extends StatefulWidget {
-  const ReviewNewCharacter({super.key, required this.title, required this.races, required this.classes, required this.activeChar, required this.character, required this.scores, required this.backgrounds});
+  const ReviewNewCharacter({super.key, required this.title, required this.backuplist, required this.races, required this.classes, required this.activeChar, required this.character, required this.scores, required this.backgrounds});
   final String title;
   final List<Race> races;
+  final List<Race> backuplist;
   final List<Class> classes;
   final Character character;
   final List<int> scores;
@@ -46,6 +47,7 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
     List<int> postRaceASI = [];
     List<String> stringMods = [];
     List<Race> raceList = widget.races;
+    List<Race> backupList = raceList;
     List<Class> classList = widget.classes;
     List<int> scores = widget.scores;
     List<Background> backgrounds = widget.backgrounds;
@@ -531,7 +533,7 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: abilityScores, backgrounds: backgrounds, activeChar: activeChar,),
+                            child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: abilityScores, backgrounds: backgrounds, activeChar: activeChar, backuplist: backupList,),
                             inheritTheme: true,
                             ctx: context),
                       );
@@ -547,7 +549,7 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                     onPressed: () async {
                       log('finish character');
                       character.name = characterNameController.text.toString();
-                      character.abilityScores = abilityScores;
+                      character.abilityScores = postRaceASI;
                       await FirebaseCRUD.addNewCharacter(character: character);
                       SnackBar snackBar = SnackBar(
                         content: Text(

@@ -19,9 +19,10 @@ import 'choose_class.dart';
 
 //CHOOSE A RACE
 class ChooseRace extends StatefulWidget {
-  const ChooseRace({super.key, required this.title, required this.races, required this.classes, required this.character, required this.activeChar});
+  const ChooseRace({super.key, required this.title, required this.races, required this.backuplist, required this.classes, required this.character, required this.activeChar});
   final String title;
   final List<Race> races;
+  final List<Race> backuplist;
   final List<Class> classes;
   final Character character;
   final Character activeChar;
@@ -40,6 +41,7 @@ class _ChooseRaceState extends State<ChooseRace> {
   Widget build(BuildContext context) {
     Character activeChar = widget.activeChar;
     List<Race> raceList = widget.races;
+    List<Race> backupList = widget.backuplist;
     List<Class> classList = widget.classes;
     Character character = widget.character;
 
@@ -439,11 +441,16 @@ class _ChooseRaceState extends State<ChooseRace> {
                                       charRace.asi = newASI;
                                     }
                                     character.race = charRace;
+
+                                    //THIS WILL NEED TO BE A COPY OF RACELIST
+                                    //NECESSARY FOR BACK NAVIGATION ON RACES THAT CHOOSE ABILITY SCORES
+                                    List<Race> backupList = [];
+
                                     Navigator.push(
                                       context,
                                       PageTransition(
                                           type: PageTransitionType.rightToLeft,
-                                          child: ChooseClass(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar,),
+                                          child: ChooseClass(title: 'Create a New Character', races: raceList, backuprace: backupList, classes: classList, character: character, activeChar: activeChar,),
                                           inheritTheme: true,
                                           ctx: context),
                                     );

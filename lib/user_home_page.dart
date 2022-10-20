@@ -61,7 +61,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                 height: 20,
                               ),
                               Text(
-                                'Loading Race and Class data ...',
+                                'Loading Race data ...',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontFamily: 'Roboto',
@@ -76,14 +76,50 @@ class _UserHomePageState extends State<UserHomePage> {
                   );
 
                   List<Race> raceList = await FirebaseCRUD.getRaces();
+
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => Center(child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            color: Colors.white,
+                            border: Border.all(color: Colors.blue, width: 2),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              CircularProgressIndicator(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                'Loading Class data ...',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Roboto',
+                                  color: Colors.blue,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),),
+                  );
                   List<Class> classList = await FirebaseCRUD.getClasses();
 
+                  List<Race> backupList = [];
 
                   Navigator.push(
                     context,
                     PageTransition(
                         type: PageTransitionType.bottomToTop,
-                        child: ChooseRace(title: 'Choose Race', races: raceList, classes: classList, character: Character(), activeChar: activeCharacter,),
+                        child: ChooseRace(title: 'Choose Race', races: raceList, classes: classList, character: Character(), activeChar: activeCharacter, backuplist: backupList,),
                         inheritTheme: true,
                         ctx: context),
                   );

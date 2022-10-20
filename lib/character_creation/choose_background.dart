@@ -19,9 +19,10 @@ import 'choose_ability_scores.dart';
 
 //CHOOSE BACKGROUND AND PROFICIENCIES
 class ChooseBackground extends StatefulWidget {
-  const ChooseBackground({super.key, required this.title, required this.races, required this.classes, required this.character, required this.activeChar, required this.scores, required this.backgrounds});
+  const ChooseBackground({super.key, required this.title, required this.races, required this.classes, required this.character, required this.backuplist, required this.activeChar, required this.scores, required this.backgrounds});
   final String title;
   final List<Race> races;
+  final List<Race> backuplist;
   final List<Class> classes;
   final Character character;
   final Character activeChar;
@@ -54,6 +55,7 @@ class _ChooseBackgroundAndProficiencies extends State<ChooseBackground> {
     Character character = widget.character;
     List<Background> backgroundList = widget.backgrounds;
     List<Race> raceList = widget.races;
+    List<Race> backupList = widget.backuplist;
     List<Class> classList = widget.classes;
     List<int> scores = widget.scores;
     Background chosenBackground = Background(name: '');
@@ -80,7 +82,7 @@ class _ChooseBackgroundAndProficiencies extends State<ChooseBackground> {
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: ChooseAbilityScores(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar,),
+                            child: ChooseAbilityScores(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar, backuplist: backupList,),
                             inheritTheme: true,
                             ctx: context),
                       );
@@ -179,7 +181,7 @@ class _ChooseBackgroundAndProficiencies extends State<ChooseBackground> {
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: ReviewNewCharacter(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList, activeChar: activeChar,),
+                            child: ReviewNewCharacter(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList, activeChar: activeChar, backuplist: backupList,),
                             inheritTheme: true,
                             ctx: context),
                       );
