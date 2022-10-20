@@ -428,6 +428,62 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
         return widget;
       }
 
+      Widget getSpells() {
+        //iterate through the list of spells to get a string for cantrips, and a string for first level spells
+        String cantrips = '';
+        String first = '';
+
+        for (int i = 0; i < character.spellList!.length; i++) {
+          if (character.spellList![i].level! == 'Cantrip') {
+            if (cantrips == '') {
+              cantrips = character.spellList![i].name!;
+            }
+            else {
+              cantrips = '$cantrips, ${character.spellList![i].name!}';
+            }
+          }
+          else if (character.spellList![i].level! == '1') {
+            if (first == '') {
+              first = character.spellList![i].name!;
+            }
+            else {
+              first = '$first, ${character.spellList![i].name!}';
+            }
+          }
+        }
+
+
+
+        Widget widget = Container(
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Cantrips',
+                style: headerText,
+              ),
+              Text(
+                cantrips,
+                style: contentText,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'First Level Spells',
+                style: headerText,
+              ),
+              Text(
+                first,
+                style: contentText,
+              ),
+            ],
+          ),
+        );
+
+        return widget;
+      }
+
       return Container(
         padding: const EdgeInsets.all(24),
         width: double.infinity,
@@ -467,32 +523,42 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
             const Divider(),
             rowHPAC(),
             const Divider(),
-            const Text(
-              'Class Proficiencies',
-              style: headerText,
-            ),
-            Text(
-              classProfString,
-              style: contentText,
+            Container(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Class Proficiencies',
+                    style: headerText,
+                  ),
+                  Text(
+                    classProfString,
+                    style: contentText,
+                  ),
+                  const Divider(),
+                  const Text(
+                    'Background Proficiencies',
+                    style: headerText,
+                  ),
+                  Text(
+                    backgroundProfString,
+                    style: contentText,
+                  ),
+                  const Divider(),
+                  const Text(
+                    'Languages',
+                    style: headerText,
+                  ),
+                  Text(
+                    languages,
+                    style: contentText,
+                  ),
+                ],
+              ),
             ),
             const Divider(),
-            const Text(
-              'Background Proficiencies',
-              style: headerText,
-            ),
-            Text(
-              backgroundProfString,
-              style: contentText,
-            ),
-            const Divider(),
-            const Text(
-              'Languages',
-              style: headerText,
-            ),
-            Text(
-              languages,
-              style: contentText,
-            ),
+            getSpells(),
             const Divider(),
             getFeatures(),
           ],

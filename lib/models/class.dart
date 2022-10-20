@@ -15,7 +15,7 @@ class Class {
   List<String>? weaponProfs;
   List<String>? toolProfs;
   List<Spell>? spellList;
-  List<int>? spellCount;
+  List<String>? spellCount;
 
   Class({
     this.name,

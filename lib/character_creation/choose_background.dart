@@ -15,6 +15,7 @@ import '../models/class.dart';
 import '../models/feature.dart';
 import '../models/race.dart';
 import '../models/skills_languages_tools.dart' as sk;
+import '../models/spell.dart';
 import 'choose_ability_scores.dart';
 
 //CHOOSE BACKGROUND AND PROFICIENCIES
@@ -63,6 +64,11 @@ class _ChooseBackgroundAndProficiencies extends State<ChooseBackground> {
     Widget buttonRow() {
       //set the strings for tool, skill, and language
       //SKILLS
+
+      //log the spells to confirm
+      for (Spell i in character.spellList!) {
+        log(i.name!);
+      }
 
       return Container(
         width: double.infinity,

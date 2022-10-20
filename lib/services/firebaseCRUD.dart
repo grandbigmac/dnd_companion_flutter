@@ -111,19 +111,20 @@ class FirebaseCRUD {
       }
 
       //Get the number of cantrips this class can have at level 1
-      int cantripCount = 0;
-      int firstLevelCount = 0;
-      List<int> spellCount = [];
+      String cantripCount = '';
+      String firstLevelCount = '';
+      List<String> spellCount = [];
+      log(doc.get('name'));
       try {
         final cantripQuery = await FirebaseFirestore.instance.collection('classes').doc(doc.id).collection('spellcounts').get();
         for (var doc in cantripQuery.docs) {
           String level = doc.get('level');
           log('level = $level');
           if (level == 'cantrip') {
-            cantripCount = (int.parse(doc.get('count')));
+            cantripCount = (doc.get('count'));
           }
           else if (level == '1') {
-            firstLevelCount = (int.parse(doc.get('count')));
+            firstLevelCount = (doc.get('count'));
           }
         }
       } catch (e) {
@@ -285,6 +286,146 @@ class FirebaseCRUD {
       }
     }
 
+    //GET 1ST LEVEL SPELLS
+    //////////////////////////////
+    //GET ABJURATION
+    final abfirQuery = await FirebaseFirestore.instance.collection('spells').doc('1').collection('abjuration').get();
+    for (var doc in abfirQuery.docs) {
+      String name = doc.id;
+      String classes = doc.get('class');
+      String description = doc.get('description');
+      String level = '1';
+      String casttime = doc.get('casttime');
+      String components = doc.get('components');
+      String duration = doc.get('duration');
+      String range = doc.get('range');
+      String school = 'Abjuration';
+
+      if (classes.contains(charClass)) {
+        spells.add(Spell(name: name, classes: classes, description: description, level: level, casttime: casttime, components: components, duration: duration, range: range, school: school));
+      }
+    }//////////////////////////////
+    //GET CONJURATION
+    final confirQuery = await FirebaseFirestore.instance.collection('spells').doc('1').collection('conjuration').get();
+    for (var doc in confirQuery.docs) {
+      String name = doc.id;
+      String classes = doc.get('class');
+      String description = doc.get('description');
+      String level = '1';
+      String casttime = doc.get('casttime');
+      String components = doc.get('components');
+      String duration = doc.get('duration');
+      String range = doc.get('range');
+      String school = 'Conjuration';
+
+      if (classes.contains(charClass)) {
+        spells.add(Spell(name: name, classes: classes, description: description, level: level, casttime: casttime, components: components, duration: duration, range: range, school: school));
+      }
+    }
+    //GET DIVINATION
+    final divfirQuery = await FirebaseFirestore.instance.collection('spells').doc('1').collection('divination').get();
+    for (var doc in divfirQuery.docs) {
+      String name = doc.id;
+      String classes = doc.get('class');
+      String description = doc.get('description');
+      String level = '1';
+      String casttime = doc.get('casttime');
+      String components = doc.get('components');
+      String duration = doc.get('duration');
+      String range = doc.get('range');
+      String school = 'Divination';
+
+      if (classes.contains(charClass)) {
+        spells.add(Spell(name: name, classes: classes, description: description, level: level, casttime: casttime, components: components, duration: duration, range: range, school: school));
+      }
+
+    }
+    //GET ENCHANTMENT
+    final encfirQuery = await FirebaseFirestore.instance.collection('spells').doc('1').collection('enchantment').get();
+    for (var doc in encfirQuery.docs) {
+      String name = doc.id;
+      String classes = doc.get('class');
+      String description = doc.get('description');
+      String level = '1';
+      String casttime = doc.get('casttime');
+      String components = doc.get('components');
+      String duration = doc.get('duration');
+      String range = doc.get('range');
+      String school = 'Enchantment';
+
+      if (classes.contains(charClass)) {
+        spells.add(Spell(name: name, classes: classes, description: description, level: level, casttime: casttime, components: components, duration: duration, range: range, school: school));
+      }
+    }
+    //GET EVOCATION
+    final evofirQuery = await FirebaseFirestore.instance.collection('spells').doc('1').collection('evocation').get();
+    for (var doc in evofirQuery.docs) {
+      String name = doc.id;
+      String classes = doc.get('class');
+      String description = doc.get('description');
+      String level = '1';
+      String casttime = doc.get('casttime');
+      String components = doc.get('components');
+      String duration = doc.get('duration');
+      String range = doc.get('range');
+      String school = 'Evocation';
+
+      if (classes.contains(charClass)) {
+        spells.add(Spell(name: name, classes: classes, description: description, level: level, casttime: casttime, components: components, duration: duration, range: range, school: school));
+      }
+    }
+    //GET ILLUSION
+    final illfirQuery = await FirebaseFirestore.instance.collection('spells').doc('1').collection('illusion').get();
+    for (var doc in illfirQuery.docs) {
+      String name = doc.id;
+      String classes = doc.get('class');
+      String description = doc.get('description');
+      String level = '1';
+      String casttime = doc.get('casttime');
+      String components = doc.get('components');
+      String duration = doc.get('duration');
+      String range = doc.get('range');
+      String school = 'Illusion';
+
+      if (classes.contains(charClass)) {
+        spells.add(Spell(name: name, classes: classes, description: description, level: level, casttime: casttime, components: components, duration: duration, range: range, school: school));
+      }
+    }
+    //GET NECROMANCY
+    final necfirQuery = await FirebaseFirestore.instance.collection('spells').doc('1').collection('necromancy').get();
+    for (var doc in necfirQuery.docs) {
+      String name = doc.id;
+      String classes = doc.get('class');
+      String description = doc.get('description');
+      String level = '1';
+      String casttime = doc.get('casttime');
+      String components = doc.get('components');
+      String duration = doc.get('duration');
+      String range = doc.get('range');
+      String school = 'Necromancy';
+
+      if (classes.contains(charClass)) {
+        spells.add(Spell(name: name, classes: classes, description: description, level: level, casttime: casttime, components: components, duration: duration, range: range, school: school));
+      }
+    }
+    //GET TRANSMUTATION
+    final trafirQuery = await FirebaseFirestore.instance.collection('spells').doc('1').collection('transmutation').get();
+    for (var doc in trafirQuery.docs) {
+      String name = doc.id;
+      String classes = doc.get('class');
+      String description = doc.get('description');
+      String level = '1';
+      String casttime = doc.get('casttime');
+      String components = doc.get('components');
+      String duration = doc.get('duration');
+      String range = doc.get('range');
+      String school = 'Transmutation';
+
+      if (classes.contains(charClass)) {
+        spells.add(Spell(name: name, classes: classes, description: description, level: level, casttime: casttime, components: components, duration: duration, range: range, school: school));
+      }
+    }
+
     return spells;
   }
 
@@ -386,6 +527,17 @@ class FirebaseCRUD {
 
     bool spellcaster = character.charClass!.spellcaster!;
 
+    //Create a spelllist string from the spell list object
+    String spellList = '';
+    for (int i = 0; i < character.spellList!.length; i++) {
+      if (i == 0) {
+        spellList = character.spellList![i].name!;
+      }
+      else {
+        spellList = spellList + ',' + character.spellList![i].name!;
+      }
+    }
+
     Response response = Response();
     CollectionReference collection = FirebaseFirestore.instance.collection('characters');
     DocumentReference documentReference = collection.doc();
@@ -404,6 +556,7 @@ class FirebaseCRUD {
       'languages': proficienciesLang,
       'profBonus': 2,
       'hp': hp,
+      'spellList': spellList,
     };
 
     var result = await documentReference
@@ -485,6 +638,10 @@ class FirebaseCRUD {
     for (String i in aS) {
       abilityScores.add(int.parse(i));
     }
+
+    //To get the character's spelllist, need to query the character's spell list string
+    //then iterate through and query the spells collection to build out each spell object
+    //then put them into a spell list and add to the character
 
     //Create Character object
     character = Character(

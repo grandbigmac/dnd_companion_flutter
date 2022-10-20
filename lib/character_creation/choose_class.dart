@@ -563,64 +563,14 @@ class _ChooseClassState extends State<ChooseClass> {
                                         }
                                       }
                                     }
-
-                                    //CHECK IF THE CLASS QUALIFIES AS A SPELLCASTER AND NAVIGATE TO THE SPELL SELECTION PAGE
-
-                                    if (charClass.spellcaster!) {
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (context) => Center(child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(16.0),
-                                                color: Colors.white,
-                                                border: Border.all(color: Colors.blue, width: 2),
-                                              ),
-                                              padding: const EdgeInsets.all(12),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: const [
-                                                  CircularProgressIndicator(),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  Text(
-                                                    'Loading Spell data ...',
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontFamily: 'Roboto',
-                                                      color: Colors.blue,
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),),
-                                      );
-                                      List<Spell> spells = await FirebaseCRUD.getCharacterCreationSpells(character.charClass!.name!);
-                                      Navigator.push(
-                                        context,
-                                        PageTransition(
-                                            type: PageTransitionType.rightToLeft,
-                                            child: ChooseSpells(title: 'Create a New Character', spells: spells, races: raceList, classes: classList, character: character, activeChar: activeChar, backuplist: backupList,),
-                                            inheritTheme: true,
-                                            ctx: context),
-                                      );
-                                    }
-                                    else {
-                                      Navigator.push(
-                                        context,
-                                        PageTransition(
-                                            type: PageTransitionType.rightToLeft,
-                                            child: ChooseAbilityScores(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar, backuplist: backupList,),
-                                            inheritTheme: true,
-                                            ctx: context),
-                                      );
-                                    }
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          type: PageTransitionType.rightToLeft,
+                                          child: ChooseAbilityScores(title: 'Create a New Character', races: raceList, classes: classList, character: character, activeChar: activeChar, backuplist: backupList,),
+                                          inheritTheme: true,
+                                          ctx: context),
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                                   child: const Text('CONTINUE', style: TextStyle(color: Colors.white),),

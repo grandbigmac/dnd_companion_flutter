@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'package:dnd_app_flutter/models/race.dart';
+import 'package:dnd_app_flutter/models/spell.dart';
 import 'package:dnd_app_flutter/models/subclass.dart';
 
 import '../models/class.dart';
@@ -19,6 +20,7 @@ class Character {
   List<String>? languages;
   List<String>? toolProfs;
   int? profBonus;
+  List<Spell>? spellList;
 
   Character({
     this.name,
@@ -33,5 +35,6 @@ class Character {
     this.languages,
     this.toolProfs,
     this.profBonus,
+    this.spellList,
   });
 }

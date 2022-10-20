@@ -14,8 +14,10 @@ import '../models/class.dart';
 import '../models/feature.dart';
 import '../models/race.dart';
 import '../models/skills_languages_tools.dart' as sk;
+import '../models/spell.dart';
 import 'choose_background.dart';
 import 'choose_class.dart';
+import 'choose_spells.dart';
 
 
 //CHOOSE ABILITY SCORES
@@ -334,16 +336,65 @@ class _ChooseAbilityScores extends State<ChooseAbilityScores> {
                           log(scores[i].toString());
                         }
 
-                        List<Background> backgroundList = await FirebaseCRUD.getBackgrounds();
 
-                        Navigator.push(
-                          context,
-                          PageTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList, activeChar: activeChar, backuplist: backupList,),
-                              inheritTheme: true,
-                              ctx: context),
-                        );
+                        //CHECK IF THE CLASS QUALIFIES AS A SPELLCASTER AND NAVIGATE TO THE SPELL SELECTION PAGE
+                        if (character.charClass!.spellcaster!) {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => Center(child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.blue, width: 2),
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      CircularProgressIndicator(),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      Text(
+                                        'Loading Spell data ...',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontFamily: 'Roboto',
+                                          color: Colors.blue,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),),
+                          );
+                          List<Spell> spells = await FirebaseCRUD.getCharacterCreationSpells(character.charClass!.name!);
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: ChooseSpells(title: 'Create a New Character', spells: spells, races: raceList, classes: classList, character: character, activeChar: activeChar, backuplist: backupList, scores: scores,),
+                                inheritTheme: true,
+                                ctx: context),
+                          );
+                        }
+                        else {
+                          List<Background> backgroundList = await FirebaseCRUD.getBackgrounds();
+
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: ChooseBackground(title: 'Create a New Character', races: raceList, classes: classList, character: character, scores: scores, backgrounds: backgroundList, activeChar: activeChar, backuplist: backupList,),
+                                inheritTheme: true,
+                                ctx: context),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
                       child: const Text('CONTINUE', style: TextStyle(color: Colors.white),),
