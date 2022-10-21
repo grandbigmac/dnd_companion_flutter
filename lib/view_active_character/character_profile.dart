@@ -281,6 +281,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
               style: headerText,
             ),
             Text(
+              '${resultRoll - modifier} + $modifier',
+              style: skillText,
+            ),
+            Text(
               resultRoll.toString(),
               style: titleStyle,
             )
@@ -341,6 +345,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
               style: headerText,
             ),
             Text(
+              '${resultRoll - modifier} + $modifier',
+              style: skillText,
+            ),
+            Text(
               resultRoll.toString(),
               style: titleStyle,
             )
@@ -372,6 +380,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
               style: headerText,
             ),
             Text(
+              '${resultRoll - modifier} + $modifier',
+              style: skillText,
+            ),
+            Text(
               resultRoll.toString(),
               style: titleStyle,
             )
@@ -387,7 +399,11 @@ class CharacterProfilePage extends State<CharacterProfile> {
         log('Prof bonus : $i');
       }
 
-      List<String> skillNames = skills;
+      List<String> skillNames = [];
+      for (String i in skills) {
+        skillNames.add(i);
+      }
+
       skillNames.remove('--');
       List<int> modList = [];
       List<String> skillMods = skillMod;
@@ -442,18 +458,22 @@ class CharacterProfilePage extends State<CharacterProfile> {
       List<Widget> widgets = [];
       for (int i = 0; i < skillNames.length; i++) {
         log('${skillNames[i]}: ${modList[i]}');
+        String number = modList[i].toString();
+        if (modList[i] >= 0) {
+          number = '+$number';
+        }
         Widget widget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 130,
+              width: 150,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
                     height: 35,
-                    width: 120,
+                    width: 115,
                     child: TextButton(
                       onPressed: () {
                         for (int i in modifiers) {
@@ -462,7 +482,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
                         //roll the skill
                         ScaffoldMessenger.of(context).hideCurrentSnackBar();
                         SnackBar snackBar = SnackBar(
-                          content: Container(height: 140, child: skillRollWidget(modList[i], skillNames[i])),
+                          content: Container(height: 160, child: skillRollWidget(modList[i], skillNames[i])),
                         );
 
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -478,7 +498,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
                     ),
                   ),
                   Text(
-                    modList[i].toString(),
+                    number,
                     style: skillModTextStyle,
                   )
                 ],
@@ -491,7 +511,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
       }
 
       return Container(
-        width: 150,
+        width: 160,
         padding: const EdgeInsets.only(left:10, right:10),
         child: ExpansionTile(
           title: const Text('Skills', style: headerText,),
@@ -539,6 +559,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
           //give it extra because proficiency
 
         }
+        String number = modifiers[i].toString();
+        if (modifiers[i] > 0) {
+          number = '+$number';
+        }
 
         Widget widget = Container(
           child: Row(
@@ -548,7 +572,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
                   //roll the skill
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
                     SnackBar snackBar = SnackBar(
-                      content: Container(height: 140, child: skillRollWidget(modifiers[i], '${abilities[i]} saving throw')),
+                      content: Container(height: 160, child: skillRollWidget(modifiers[i], '${abilities[i]} saving throw')),
                     );
 
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -559,8 +583,8 @@ class CharacterProfilePage extends State<CharacterProfile> {
                 ),
               ),
               Text(
-                modifiers[i].toString(),
-                style: contentText,
+                number,
+                style: skillModTextStyle,
               )
             ],
           ),
@@ -635,6 +659,8 @@ class CharacterProfilePage extends State<CharacterProfile> {
 
     Widget profileContent() {
       Column subclassWidget = Column();
+      String subclassName = character.subclass!.name!;
+      log(subclassName);
 
       if (character.subclass!.name! != '') {
         subclassWidget = Column(

@@ -14,8 +14,10 @@ import '../models/background.dart';
 import '../models/character.dart';
 import '../models/class.dart';
 import '../models/feature.dart';
+import '../models/level.dart';
 import '../models/race.dart';
 import '../models/skills_languages_tools.dart' as sk;
+import '../models/subclass.dart';
 import '../user_home_page.dart';
 import 'choose_background.dart';
 
@@ -619,6 +621,12 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                       log('finish character');
                       character.name = characterNameController.text.toString();
                       character.abilityScores = postRaceASI;
+                      //Create an empty subclass object
+                      Subclass subclass = Subclass(name: '');
+                      character.subclass = subclass;
+                      character.level = Level(number: 1);
+                      character.currentHp = character.hp!;
+                      character.profBonus = 2;
                       await FirebaseCRUD.addNewCharacter(character: character, uId: uId);
                       SnackBar snackBar = SnackBar(
                         content: Text(

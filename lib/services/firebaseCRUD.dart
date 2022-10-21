@@ -676,7 +676,7 @@ class FirebaseCRUD {
 
     //Get character hp
     int hp = snapshotCharacter['hp'];
-    int currentHp = snapshotCharacter['currentHp'];
+    int currentHp = snapshotCharacter['currentHP'];
     int profBonus = snapshotCharacter['profBonus'];
     String proficiencies = snapshotCharacter['proficiencies'];
 
@@ -734,6 +734,7 @@ class FirebaseCRUD {
     //To get the character's spelllist, need to query the character's spell list string
     //then iterate through and query the spells collection to build out each spell object
     //then put them into a spell list and add to the character
+
 
     //Create Character object
     character = Character(
