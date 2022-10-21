@@ -11,6 +11,14 @@ List<String> skills = [
   '--'
 ];
 
+List<String> skillMod = [
+  'DEX', 'WIS', 'INT', 'STR',
+  'CHA', 'INT', 'WIS', 'CHA',
+  'INT', 'WIS', 'INT', 'WIS',
+  'CHA', 'CHA', 'INT', 'DEX',
+  'DEX', 'WIS'
+];
+
 List<String> tools = [
   'Artisan\'s Tools', 'Disguise Kit',
   'Forgery Kit', 'Gaming Set',

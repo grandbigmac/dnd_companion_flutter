@@ -7,6 +7,11 @@ TextStyle titleStyle = const TextStyle(
   fontSize: 20,
   fontFamily: 'Roboto',
 );
+TextStyle skillModTextStyle = const TextStyle(
+  color: Colors.blue,
+  fontSize: 16,
+  fontFamily: 'Roboto',
+);
 const TextStyle contentText = TextStyle(
   fontSize: 14,
   fontFamily: 'Roboto',
@@ -16,4 +21,9 @@ const TextStyle headerText = TextStyle(
   fontSize: 12,
   fontFamily: 'Roboto',
   color: Color(0xFF329BD9),
+);
+const TextStyle skillText = TextStyle(
+  fontSize: 12,
+  fontFamily: 'Roboto',
+  color: Color(0xFF455566),
 );

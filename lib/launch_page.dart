@@ -33,31 +33,7 @@ class _LaunchPageState extends State<LaunchPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              width: 250,
-              height: 100,
-              child: IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () async {
-                    log('Getting active character');
-                    Character activeCharacter = await FirebaseCRUD.getCharacter('nafwPoNFAwponaf');
-                    log(activeCharacter.name!);
 
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                          type: PageTransitionType.bottomToTop,
-                          child: UserHomePage(title: 'GO', activeCharacter: activeCharacter,),
-                          inheritTheme: true,
-                          ctx: context),
-                    );
-                  },
-                  icon: Image.asset(
-                    'assets/images/select_character.png',
-                    fit: BoxFit.fill,
-                  )
-              ),
-            ),
           ],
         ),
       ),

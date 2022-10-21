@@ -65,11 +65,6 @@ class _ChooseBackgroundAndProficiencies extends State<ChooseBackground> {
       //set the strings for tool, skill, and language
       //SKILLS
 
-      //log the spells to confirm
-      for (Spell i in character.spellList!) {
-        log(i.name!);
-      }
-
       return Container(
         width: double.infinity,
         child: Column(

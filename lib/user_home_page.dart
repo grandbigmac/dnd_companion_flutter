@@ -1,8 +1,11 @@
 import 'dart:developer';
 
 import 'package:dnd_app_flutter/character_creation/choose_race.dart';
+import 'package:dnd_app_flutter/login_register/login.dart';
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
 import 'package:dnd_app_flutter/style/textstyles.dart';
+import 'package:dnd_app_flutter/view_active_character/character_profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -24,16 +27,55 @@ class UserHomePage extends StatefulWidget {
 
 class _UserHomePageState extends State<UserHomePage> {
 
+
   @override
   Widget build(BuildContext context) {
     activeCharacter = widget.activeCharacter;
+
+    void newUserCatch() {
+      if (activeCharacter.name! == 'New User') {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) =>
+                Center(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16.0),
+                        color: Colors.white,
+                        border: Border.all(color: Colors.blue, width: 2),
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          CircularProgressIndicator(),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            'As a new user you gotta make a character.',
+                            style: contentText,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),)
+        );
+      }
+    }
 
     Widget tempHomePage() {
 
       return Container(
         padding: const EdgeInsets.all(24),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            //CREATE CHARACTER BUTTON
             SizedBox(
               height: 35,
               width: 250,
@@ -128,15 +170,46 @@ class _UserHomePageState extends State<UserHomePage> {
                 child: const Text('CREATE A CHARACTER', style: TextStyle(color: Colors.white),),
               ),
             ),
+            const Divider(),
+            SizedBox(
+              height: 35,
+              width: 250,
+              child: ElevatedButton(
+                onPressed: () {
+                  //VIEW ACTIVE CHARACTER
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.bottomToTop,
+                        child: CharacterProfile(title: 'Profile', activeChar: activeCharacter,),
+                        inheritTheme: true,
+                        ctx: context),
+                  );
+                },
+                style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+                child: const Text('VIEW ACTIVE CHARACTER', style: TextStyle(color: Colors.white),),
+              ),
+            ),
+            //SIGN OUT BUTTON
+            const SizedBox(height: 200,),
             SizedBox(
               height: 35,
               width: 250,
               child: ElevatedButton(
                 onPressed: () {
                   //buttons
+                  signOut();
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.bottomToTop,
+                        child: const LoginPage(title: 'Log in',),
+                        inheritTheme: true,
+                        ctx: context),
+                  );
                 },
                 style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-                child: const Text('SELECT ACTIVE CHARACTER', style: TextStyle(color: Colors.white),),
+                child: const Text('SIGN OUT', style: TextStyle(color: Colors.white),),
               ),
             ),
           ],
@@ -167,4 +240,9 @@ class _UserHomePageState extends State<UserHomePage> {
       ),
     );
   }
+}
+
+void signOut() {
+  FirebaseAuth.instance.signOut();
+
 }

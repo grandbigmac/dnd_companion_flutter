@@ -10,6 +10,7 @@ import 'level.dart';
 class Character {
   String? name;
   int? hp;
+  int? currentHp;
   Level? level;
   Class? charClass;
   Race? race;
@@ -25,6 +26,7 @@ class Character {
   Character({
     this.name,
     this.hp,
+    this.currentHp,
     this.level,
     this.charClass,
     this.race,

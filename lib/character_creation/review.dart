@@ -5,6 +5,7 @@ import 'package:dnd_app_flutter/launch_page.dart';
 import 'package:dnd_app_flutter/services/dice_rolls.dart';
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
 import 'package:dnd_app_flutter/style/textstyles.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -35,6 +36,7 @@ class ReviewNewCharacter extends StatefulWidget {
 }
 class _ChooseNameAndReview extends State<ReviewNewCharacter> {
   List<int> newScores = [];
+  String uId = FirebaseAuth.instance.currentUser!.uid;
 
 
   @override
@@ -430,58 +432,59 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
 
       Widget getSpells() {
         //iterate through the list of spells to get a string for cantrips, and a string for first level spells
-        String cantrips = '';
-        String first = '';
+        if (character.charClass!.spellcaster!) {
+          String cantrips = '';
+          String first = '';
 
-        for (int i = 0; i < character.spellList!.length; i++) {
-          if (character.spellList![i].level! == 'Cantrip') {
-            if (cantrips == '') {
-              cantrips = character.spellList![i].name!;
+          for (int i = 0; i < character.spellList!.length; i++) {
+            if (character.spellList![i].level! == 'Cantrip') {
+              if (cantrips == '') {
+                cantrips = character.spellList![i].name!;
+              }
+              else {
+                cantrips = '$cantrips, ${character.spellList![i].name!}';
+              }
             }
-            else {
-              cantrips = '$cantrips, ${character.spellList![i].name!}';
+            else if (character.spellList![i].level! == '1') {
+              if (first == '') {
+                first = character.spellList![i].name!;
+              }
+              else {
+                first = '$first, ${character.spellList![i].name!}';
+              }
             }
           }
-          else if (character.spellList![i].level! == '1') {
-            if (first == '') {
-              first = character.spellList![i].name!;
-            }
-            else {
-              first = '$first, ${character.spellList![i].name!}';
-            }
-          }
+
+          Widget widget = Container(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Cantrips',
+                  style: headerText,
+                ),
+                Text(
+                  cantrips,
+                  style: contentText,
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'First Level Spells',
+                  style: headerText,
+                ),
+                Text(
+                  first,
+                  style: contentText,
+                ),
+              ],
+            ),
+          );
+
+          return widget;
         }
-
-
-
-        Widget widget = Container(
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Cantrips',
-                style: headerText,
-              ),
-              Text(
-                cantrips,
-                style: contentText,
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'First Level Spells',
-                style: headerText,
-              ),
-              Text(
-                first,
-                style: contentText,
-              ),
-            ],
-          ),
-        );
-
-        return widget;
+        else return Container();
       }
 
       return Container(
@@ -616,7 +619,7 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                       log('finish character');
                       character.name = characterNameController.text.toString();
                       character.abilityScores = postRaceASI;
-                      await FirebaseCRUD.addNewCharacter(character: character);
+                      await FirebaseCRUD.addNewCharacter(character: character, uId: uId);
                       SnackBar snackBar = SnackBar(
                         content: Text(
                           '${character.name!} added to characters!',
@@ -628,7 +631,7 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                         context,
                         PageTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: UserHomePage(title: 'Home Page', activeCharacter: activeChar,),
+                            child: UserHomePage(title: 'Home Page', activeCharacter: character,),
                             inheritTheme: true,
                             ctx: context),
                       );

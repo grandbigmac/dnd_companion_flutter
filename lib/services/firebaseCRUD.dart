@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dnd_app_flutter/models/character.dart';
@@ -6,6 +7,7 @@ import 'package:dnd_app_flutter/models/level.dart';
 import 'package:dnd_app_flutter/models/skills_languages_tools.dart';
 import 'package:dnd_app_flutter/models/subclass.dart';
 import 'package:dnd_app_flutter/models/user.dart';
+import 'package:dnd_app_flutter/user_home_page.dart';
 
 import '../models/background.dart';
 import '../models/class.dart';
@@ -95,7 +97,6 @@ class FirebaseCRUD {
           armourProfs.add(name);
         }
       } catch (e) {
-        log('no armour proficiencies');
       }
 
       //Get class tool proficiencies (collection might not exist)
@@ -107,19 +108,16 @@ class FirebaseCRUD {
           toolProfs.add(name);
         }
       } catch (e) {
-        log('no tool proficiencies');
       }
 
       //Get the number of cantrips this class can have at level 1
       String cantripCount = '';
       String firstLevelCount = '';
       List<String> spellCount = [];
-      log(doc.get('name'));
       try {
         final cantripQuery = await FirebaseFirestore.instance.collection('classes').doc(doc.id).collection('spellcounts').get();
         for (var doc in cantripQuery.docs) {
           String level = doc.get('level');
-          log('level = $level');
           if (level == 'cantrip') {
             cantripCount = (doc.get('count'));
           }
@@ -128,7 +126,6 @@ class FirebaseCRUD {
           }
         }
       } catch (e) {
-        log('no spells');
       }
       spellCount.add(cantripCount);
       spellCount.add(firstLevelCount);
@@ -431,6 +428,7 @@ class FirebaseCRUD {
 
   static Future<Response> addNewCharacter({
     required Character character,
+    required String uId,
   }) async {
     //GET THE CHARACTER, RACE AND BACKGROUND STRINGS FROM THEIR DOC ID'S
     String raceString = '', classString = '', backgroundString = '';
@@ -525,63 +523,119 @@ class FirebaseCRUD {
 
     int hp = character.hp!;
 
-    bool spellcaster = character.charClass!.spellcaster!;
 
-    //Create a spelllist string from the spell list object
-    String spellList = '';
-    for (int i = 0; i < character.spellList!.length; i++) {
-      if (i == 0) {
-        spellList = character.spellList![i].name!;
-      }
-      else {
-        spellList = spellList + ',' + character.spellList![i].name!;
-      }
-    }
+    //Generate a doc id
+    const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    Random _rnd = Random();
+    String id = String.fromCharCodes(Iterable.generate(
+        10, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
     Response response = Response();
     CollectionReference collection = FirebaseFirestore.instance.collection('characters');
-    DocumentReference documentReference = collection.doc();
+    DocumentReference documentReference = collection.doc(id);
 
-    Map<String, dynamic> data = <String, dynamic>{
-      'name': character.name,
-      'level': 1,
-      'race': raceString,
-      'class': classString,
-      'subclass': '',
-      'spellcaster': spellcaster,
-      'abilityScores': abilityScores,
-      'background': backgroundString,
-      'proficiencies': proficiencies,
-      'toolProfs': proficienciesTool,
-      'languages': proficienciesLang,
-      'profBonus': 2,
-      'hp': hp,
-      'spellList': spellList,
-    };
+    updateActiveCharacter(id, uId);
 
-    var result = await documentReference
-        .set(data)
-        .whenComplete(() {
-      response.code = 200;
-      response.message = 'Successfully added to firestore';
-    })
-        .catchError((e) {
-      response.code = 500;
-      response.message = e;
-    });
+    bool spellcaster = character.charClass!.spellcaster!;
 
-    return response;
+    if (character.charClass!.spellcaster!){
+      //Create a spelllist string from the spell list object
+      String spellList = '';
+      for (int i = 0; i < character.spellList!.length; i++) {
+        if (i == 0) {
+          spellList = character.spellList![i].name!;
+        } else {
+          spellList = spellList + ',' + character.spellList![i].name!;
+        }
+      }
+      Map<String, dynamic> data = <String, dynamic>{
+        'name': character.name,
+        'level': 1,
+        'race': raceString,
+        'class': classString,
+        'subclass': '',
+        'spellcaster': spellcaster,
+        'abilityScores': abilityScores,
+        'background': backgroundString,
+        'proficiencies': proficiencies,
+        'toolProfs': proficienciesTool,
+        'languages': proficienciesLang,
+        'profBonus': 2,
+        'hp': hp,
+        'currentHp': hp,
+        'spellList': spellList,
+      };
+
+      var result = await documentReference
+          .set(data)
+          .whenComplete(() {
+        response.code = 200;
+        response.message = 'Successfully added to firestore';
+      })
+          .catchError((e) {
+        response.code = 500;
+        response.message = e;
+      });
+
+      return response;
+    }
+    else {
+      Map<String, dynamic> data = <String, dynamic>{
+        'name': character.name,
+        'level': 1,
+        'race': raceString,
+        'class': classString,
+        'subclass': '',
+        'spellcaster': spellcaster,
+        'abilityScores': abilityScores,
+        'background': backgroundString,
+        'proficiencies': proficiencies,
+        'toolProfs': proficienciesTool,
+        'languages': proficienciesLang,
+        'profBonus': 2,
+        'hp': hp,
+        'currentHP': hp,
+      };
+
+      var result = await documentReference
+          .set(data)
+          .whenComplete(() {
+        response.code = 200;
+        response.message = 'Successfully added to firestore';
+      })
+          .catchError((e) {
+        response.code = 500;
+        response.message = e;
+      });
+
+      return response;
+    }
+
+
+
+  }
+
+  static void updateActiveCharacter(String id, String uId) async {
+    final query = await FirebaseFirestore.instance.collection('users').where('uId', isEqualTo: uId).get();
+    for (var doc in query.docs){
+      String docId = doc.id!;
+      await FirebaseFirestore.instance.collection('users').doc(docId).update({'activeCharacter': id});
+    }
+
   }
 
 
 
   static Future<Character> getCharacter(String uId) async {
+
+
     int level;
 
     String characterString;
     String raceString;
     String classString;
     String subclassString;
+    String backgroundString;
 
     List data = [];
     List<Feature> featureList = [];
@@ -592,27 +646,43 @@ class FirebaseCRUD {
     Subclass subClass = Subclass();
     Feature feature = Feature();
     Level charLevel = Level();
+    Background background = Background();
 
     //START FROM LEAST COMPLEXITY ON CLASSES TO BUILD OUT EACH OBJECT
     final snapshotUser = await FirebaseFirestore.instance.collection('users').where('uId', isEqualTo: uId).get();
     characterString = snapshotUser.docs.first['activeCharacter'];
 
+    if (characterString == 'NEW') {
+      return Character(name: 'New User');
+    }
+
     final snapshotCharacter = await FirebaseFirestore.instance.collection('characters').doc(characterString).get();
     classString = snapshotCharacter['class'];
     raceString = snapshotCharacter['race'];
     subclassString = snapshotCharacter['subclass'];
+    backgroundString = snapshotCharacter['background'];
 
     final snapshotRace = await FirebaseFirestore.instance.collection('races').doc(raceString).get();
+
+    final snapshotBackground = await FirebaseFirestore.instance.collection('backgrounds').doc(backgroundString).get();
+    String bgName = snapshotBackground['name'];
+    String bgDescription = snapshotBackground['description'];
+    String bgLanguagesString = snapshotBackground['languages'];
+    String bgSkillProfString = snapshotBackground['skillProf'];
+    String bgToolProfString = snapshotBackground['toolProf'];
 
     //Get character Level
     level = await snapshotCharacter['level'];
 
+    //Get character hp
+    int hp = snapshotCharacter['hp'];
+    int currentHp = snapshotCharacter['currentHp'];
+    int profBonus = snapshotCharacter['profBonus'];
+    String proficiencies = snapshotCharacter['proficiencies'];
+
     final snapshotClass = await FirebaseFirestore.instance.collection('classes').doc(classString).get();
 
     featureList = await getFeatures(subclassString, classString, raceString, level);
-    for (Feature i in featureList) {
-      log(i.name!);
-    }
 
     charLevel = Level(
         number: level,
@@ -628,8 +698,30 @@ class FirebaseCRUD {
         languages: snapshotRace['languages'],
     );
 
+
+    //Get class attributes
+    String name = snapshotClass['name'];
+    int hitDie = snapshotClass['hitDie'];
+    int skillCount = snapshotClass['skills'];
+    bool spellcaster = snapshotClass['spellcaster'];
+
+    List<List<String>> bigList = await getClassLists(classString, snapshotClass.id);
+    List<String> armourProfs = bigList[0];
+    List<String> weaponProfs = bigList[1];
+
     //Create class object
-    charClass = Class(name: snapshotClass['name'], description: snapshotClass['description']);
+    charClass = Class(name: name, description: snapshotClass['description'],
+        featureList: featureList, hitDie: hitDie, skillCount: skillCount, spellcaster: spellcaster,
+        armourProfs: armourProfs, weaponProfs: weaponProfs);
+
+    //Create background object
+    background = Background(
+      name: bgName,
+      description: bgDescription,
+      languages: bgLanguagesString.split(','),
+      skillProf: bgSkillProfString.split(','),
+      toolProf: bgToolProfString.split(','),
+    );
 
     //Convert ability scores string into a list
     String abilityScoresString = snapshotCharacter['abilityScores'];
@@ -648,12 +740,33 @@ class FirebaseCRUD {
         name: snapshotCharacter['name'],
         charClass: charClass,
         race: race,
+        background: background,
         level: charLevel,
         subclass: subClass,
+        hp: hp,
+        currentHp: currentHp,
+        profBonus: profBonus,
+        proficiencies: proficiencies.split(','),
         abilityScores: abilityScores,
     );
 
     return character;
+  }
+
+  static Future<List<List<String>>> getClassLists(String classString, String docId) async {
+    List<String> armourProfs = [];
+    List<String> weaponProfs = [];
+
+    final queryArmour = await FirebaseFirestore.instance.collection('classes').doc(docId).collection('armourProfs').get();
+    for (var doc in queryArmour.docs) {
+      armourProfs.add(doc.get('name'));
+    }
+    final queryWeapon = await FirebaseFirestore.instance.collection('classes').doc(docId).collection('weaponProfs').get();
+    for (var doc in queryWeapon.docs) {
+      weaponProfs.add(doc.get('name'));
+    }
+
+    return [armourProfs,weaponProfs];
   }
 
   static Future<List<Feature>> getFeatures(String subclassString, String classString, String raceString, int level) async {
@@ -670,8 +783,6 @@ class FirebaseCRUD {
 
       featureList.add(Feature(name: name, effect: effect, source: source));
     }
-
-    log((level+1).toString());
     //Query for class features
     final querySnapshotClass = await FirebaseFirestore.instance.collection('classes')
         .doc(classString).collection('features').where('levelReq', isLessThanOrEqualTo: level).get();
@@ -726,5 +837,34 @@ class FirebaseCRUD {
 
 
     return backgroundList;
+  }
+
+  static Future<Response> addNewUser({
+    required User user,
+  }) async {
+
+    Response response = Response();
+    CollectionReference collection = FirebaseFirestore.instance.collection('users');
+    DocumentReference documentReference = collection.doc();
+
+    Map<String, dynamic> data = <String, dynamic>{
+      'name': user.name!,
+      'characters': user.characters!,
+      'uId': user.uId!,
+      'activeCharacter': 'NEW',
+    };
+
+    var result = await documentReference
+        .set(data)
+        .whenComplete(() {
+      response.code = 200;
+      response.message = 'Successfully added to firestore';
+    })
+        .catchError((e) {
+      response.code = 500;
+      response.message = e;
+    });
+
+    return response;
   }
 }
