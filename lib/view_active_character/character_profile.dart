@@ -97,10 +97,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
       modifiers.add(modNumInt);
       String mod = modNumInt.toString();
 
-      if (modNumInt < 0) {
-        mod = '-$mod';
-      }
-      else {
+      if (modNumInt > 0) {
         mod = '+$mod';
       }
 
@@ -404,6 +401,8 @@ class CharacterProfilePage extends State<CharacterProfile> {
         skillNames.add(i);
       }
 
+      TextStyle thisStyle = skillModTextStyle;
+
       skillNames.remove('--');
       List<int> modList = [];
       List<String> skillMods = skillMod;
@@ -413,6 +412,9 @@ class CharacterProfilePage extends State<CharacterProfile> {
           int mod = modifiers[0];
           if (character.proficiencies!.contains(skill)) {
             mod = mod + character.profBonus!;
+          }
+          else {
+
           }
           modList.add(mod);
         }
@@ -547,25 +549,34 @@ class CharacterProfilePage extends State<CharacterProfile> {
     }
 
     Widget savingThrowsWidget() {
+      TextStyle thisStyle = skillModTextStyle;
       //modifiers
-      List<int> stMods = modifiers;
-      //abilities
-      List<String> savingThrowProficiencies = [];
+      List<int> stMods = [];
+      for (int i in modifiers) {
+        stMods.add(i);
+      }
 
       List<Widget> savingthrows = [];
 
       for (int i = 0; i < abilities.length; i++) {
-        if (savingThrowProficiencies.contains(abilities[i])) {
+        if (character.charClass!.savingthrows!.contains(abilities[i])) {
           //give it extra because proficiency
-
+          stMods[i] = stMods[i] + character.profBonus!;
+          thisStyle = profSkillModTextStyle;
         }
-        String number = modifiers[i].toString();
-        if (modifiers[i] > 0) {
+        else {
+          thisStyle = skillModTextStyle;
+        }
+        String number = stMods[i].toString();
+        if (stMods[i] >= 0) {
           number = '+$number';
         }
 
         Widget widget = Container(
+          width: 150,
           child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
                 onPressed: () {
@@ -584,7 +595,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
               ),
               Text(
                 number,
-                style: skillModTextStyle,
+                style: thisStyle,
               )
             ],
           ),

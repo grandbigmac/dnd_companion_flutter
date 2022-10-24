@@ -12,6 +12,11 @@ TextStyle skillModTextStyle = const TextStyle(
   fontSize: 16,
   fontFamily: 'Roboto',
 );
+TextStyle profSkillModTextStyle = const TextStyle(
+  color: Colors.red,
+  fontSize: 16,
+  fontFamily: 'Roboto',
+);
 const TextStyle contentText = TextStyle(
   fontSize: 14,
   fontFamily: 'Roboto',

@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -66,6 +66,8 @@ class FirebaseCRUD {
       int skillCount = doc.get('skills');
       int hitDie = doc.get('hitDie');
       bool spellcaster = doc.get('spellcaster');
+      String savingthrows = doc.get('savingthrows');
+      dev.log(savingthrows);
 
       //Get class features
       List<Feature> classFeatures = [];
@@ -133,8 +135,8 @@ class FirebaseCRUD {
       classes.add(Class(name: className, featureList: classFeatures,
           hitDie: hitDie, description: description,
           skillCount: skillCount, weaponProfs: weaponProfs,
-          toolProfs: toolProfs, armourProfs: armourProfs,
-          spellcaster: spellcaster, spellCount: spellCount));
+          toolProfs: toolProfs, armourProfs: armourProfs, savingthrows: savingthrows,
+          spellcaster: spellcaster, spellCount: spellCount,));
     }
 
     return classes;
@@ -704,6 +706,8 @@ class FirebaseCRUD {
     int hitDie = snapshotClass['hitDie'];
     int skillCount = snapshotClass['skills'];
     bool spellcaster = snapshotClass['spellcaster'];
+    String savingthrows = snapshotClass['savingthrows'];
+    dev.log(savingthrows);
 
     List<List<String>> bigList = await getClassLists(classString, snapshotClass.id);
     List<String> armourProfs = bigList[0];
@@ -711,7 +715,8 @@ class FirebaseCRUD {
 
     //Create class object
     charClass = Class(name: name, description: snapshotClass['description'],
-        featureList: featureList, hitDie: hitDie, skillCount: skillCount, spellcaster: spellcaster,
+        featureList: featureList, hitDie: hitDie, skillCount: skillCount,
+        savingthrows: savingthrows, spellcaster: spellcaster,
         armourProfs: armourProfs, weaponProfs: weaponProfs);
 
     //Create background object

@@ -10,6 +10,7 @@ class Class {
   int? hitDie;
   int? skillCount;
   bool? spellcaster;
+  String? savingthrows;
   List<Feature>? featureList;
   List<String>? armourProfs;
   List<String>? weaponProfs;
@@ -23,6 +24,7 @@ class Class {
     this.description,
     this.hitDie,
     this.spellcaster,
+    this.savingthrows,
     this.skillCount,
     this.armourProfs,
     this.weaponProfs,
