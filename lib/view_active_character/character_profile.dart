@@ -405,6 +405,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
 
       skillNames.remove('--');
       List<int> modList = [];
+      List<bool> profCheckList = [];
       List<String> skillMods = skillMod;
       for (int i = 0; i < skillMods.length; i++) {
         String skill = skillNames[i];
@@ -412,9 +413,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
           int mod = modifiers[0];
           if (character.proficiencies!.contains(skill)) {
             mod = mod + character.profBonus!;
+            profCheckList.add(true);
           }
           else {
-
+            profCheckList.add(false);
           }
           modList.add(mod);
         }
@@ -422,6 +424,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
           int mod = modifiers[1];
           if (character.proficiencies!.contains(skill)) {
             mod = mod + character.profBonus!;
+            profCheckList.add(true);
+          }
+          else {
+            profCheckList.add(false);
           }
           modList.add(mod);
         }
@@ -429,6 +435,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
           int mod = modifiers[2];
           if (character.proficiencies!.contains(skill)) {
             mod = mod + character.profBonus!;
+            profCheckList.add(true);
+          }
+          else {
+            profCheckList.add(false);
           }
           modList.add(mod);
         }
@@ -436,6 +446,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
           int mod = modifiers[3];
           if (character.proficiencies!.contains(skill)) {
             mod = mod + character.profBonus!;
+            profCheckList.add(true);
+          }
+          else {
+            profCheckList.add(false);
           }
           modList.add(mod);
         }
@@ -443,6 +457,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
           int mod = modifiers[4];
           if (character.proficiencies!.contains(skill)) {
             mod = mod + character.profBonus!;
+            profCheckList.add(true);
+          }
+          else {
+            profCheckList.add(false);
           }
           modList.add(mod);
         }
@@ -450,6 +468,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
           int mod = modifiers[5];
           if (character.proficiencies!.contains(skill)) {
             mod = mod + character.profBonus!;
+            profCheckList.add(true);
+          }
+          else {
+            profCheckList.add(false);
           }
           modList.add(mod);
         }
@@ -458,7 +480,16 @@ class CharacterProfilePage extends State<CharacterProfile> {
 
       //build skills with appropriate modifier with +profBonus where proficiency
       List<Widget> widgets = [];
+      for (bool i in profCheckList) {
+        log(i.toString());
+      }
       for (int i = 0; i < skillNames.length; i++) {
+        if (profCheckList[i]) {
+          thisStyle = profSkillModTextStyle;
+        }
+        else {
+          thisStyle = skillModTextStyle;
+        }
         log('${skillNames[i]}: ${modList[i]}');
         String number = modList[i].toString();
         if (modList[i] >= 0) {
@@ -501,7 +532,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
                   ),
                   Text(
                     number,
-                    style: skillModTextStyle,
+                    style: thisStyle,
                   )
                 ],
               ),
