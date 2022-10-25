@@ -21,6 +21,7 @@ class Character {
   List<String>? languages;
   List<String>? toolProfs;
   int? profBonus;
+  int? remainingHitDie;
   List<Spell>? spellList;
 
   Character({
@@ -35,6 +36,7 @@ class Character {
     this.background,
     this.proficiencies,
     this.languages,
+    this.remainingHitDie,
     this.toolProfs,
     this.profBonus,
     this.spellList,

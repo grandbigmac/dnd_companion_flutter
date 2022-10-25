@@ -556,6 +556,7 @@ class FirebaseCRUD {
         'race': raceString,
         'class': classString,
         'subclass': '',
+        'remainingHitDie': 1,
         'spellcaster': spellcaster,
         'abilityScores': abilityScores,
         'background': backgroundString,
@@ -678,6 +679,7 @@ class FirebaseCRUD {
 
     //Get character hp
     int hp = snapshotCharacter['hp'];
+    int remainingHitDie = snapshotCharacter['remainingHitDie'];
     int currentHp = snapshotCharacter['currentHP'];
     int profBonus = snapshotCharacter['profBonus'];
     String proficiencies = snapshotCharacter['proficiencies'];
@@ -746,6 +748,7 @@ class FirebaseCRUD {
         name: snapshotCharacter['name'],
         charClass: charClass,
         race: race,
+        remainingHitDie: remainingHitDie,
         background: background,
         level: charLevel,
         subclass: subClass,

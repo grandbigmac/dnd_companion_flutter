@@ -127,6 +127,134 @@ class CharacterProfilePage extends State<CharacterProfile> {
       columns.add(abilityScoresCol(i));
     }
 
+    Widget hitDieRollWidget() {
+      int resultRoll = 0;
+
+      //find out which die to roll for the class, then roll it and add the con mod to regain hp
+      switch(character.charClass!.hitDie!) {
+        case 6: {
+          resultRoll = rollD6() + modifiers[2];
+          break;
+        }
+        case 8: {
+          resultRoll = rollD8() + modifiers[2];
+          break;
+        }
+        case 10: {
+          resultRoll = rollD10() + modifiers[2];
+          break;
+        }
+        case 12: {
+          resultRoll = rollD12() + modifiers[2];
+          break;
+        }
+      }
+
+      //set to state where user's current HP has the rolled number added
+      int HP = character.currentHp!;
+      int newHP = HP + resultRoll;
+      if (newHP > character.hp!) {
+        newHP = character.hp!;
+      }
+      setState(() {
+        character.currentHp = newHP;
+        character.remainingHitDie = character.remainingHitDie! - 1;
+      });
+
+      Widget content = Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Rolling hit die D${character.charClass!.hitDie!}...',
+              style: headerText,
+            ),
+            const SizedBox(height: 10,),
+            Column(
+              children: const [
+                Icon(
+                  Icons.circle,
+                  color: Colors.blue,
+                ),
+              ],
+            ),
+            const Divider(),
+            const Text(
+              'Result',
+              style: headerText,
+            ),
+            Text(
+              '${resultRoll - modifiers[2]} + ${modifiers[2]}',
+              style: skillText,
+            ),
+            Text(
+              resultRoll.toString(),
+              style: titleStyle,
+            )
+          ],
+        ),
+      );
+
+      return content;
+    }
+
+    Widget hitDieWidget() {
+
+
+      Widget widget = Container(
+        width: 150,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                //If no remaining hit die, don't do it
+                if (character.remainingHitDie! == 0) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  SnackBar snackBar = const SnackBar(
+                    content: Text('No hit die remaining!'),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
+                }
+                if (character.currentHp! == character.hp!) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  SnackBar snackBar = const SnackBar(
+                    content: Text('Already at max HP!'),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  return;
+                }
+                //reduce remaining hit die by 1 and roll the correct dice for the class
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                SnackBar snackBar = SnackBar(
+                  content: Container(height: 160, child: hitDieRollWidget()),
+                );
+
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+              child: const Center(child: Icon(Icons.add, color: Colors.white,)),
+            ),
+            const SizedBox(width: 10,),
+            const Icon(
+              Icons.favorite,
+              color: Colors.blue,
+              size: 12,
+            ),
+            Text(
+              character.remainingHitDie!.toString(),
+              style: contentText,
+            )
+
+          ],
+        ),
+      );
+
+      return widget;
+    }
+
     Widget abilityScoresRow = Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -198,18 +326,63 @@ class CharacterProfilePage extends State<CharacterProfile> {
 
 
       return Container(
-        width: 130,
+        width: 150,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             const Icon(
               Icons.favorite_outline_sharp,
               color: Colors.blue,
             ),
             const SizedBox(width: 12,),
-            Text(
-              '${character.currentHp!} / ${character.hp!}',
-              style: contentText,
+            Container(
+              width: 50,
+              child: Text(
+                '${character.currentHp!} / ${character.hp!}',
+                textAlign: TextAlign.right,
+                style: contentText,
+              ),
+            ),
+            Column(
+              children: [
+                IconButton(
+                    icon: const Icon(Icons.arrow_drop_up),
+                    onPressed: () {
+                      if (character.currentHp! == character.hp!) {
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        SnackBar snackBar = const SnackBar(
+                          content: Text('HP is already at max!'),
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        return;
+                      }
+                      setState(() {
+                        int newHP = character.currentHp! + 1;
+                        character.currentHp = newHP;
+                      });
+                    }
+                ),
+                IconButton(
+                    icon: const Icon(Icons.arrow_drop_down),
+                    onPressed: () {
+                      if (character.currentHp! == 0) {
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        SnackBar snackBar = const SnackBar(
+                          content: Text('HP is already at 0!'),
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        return;
+                      }
+                      setState(() {
+                        int newHP = character.currentHp! - 1;
+                        character.currentHp = newHP;
+                      });
+
+                    }
+                )
+              ],
             ),
           ],
         ),
@@ -635,7 +808,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
       }
 
       return Container(
-        width: 150,
+        width: 160,
         padding: const EdgeInsets.only(left:10, right:10),
         child: ExpansionTile(
           title: const Text('Saving Throws', style: headerText,),
@@ -813,6 +986,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             hpWidget(),
+                            hitDieWidget(),
                             const Divider(),
                             skillsWithProficiencies(),
                             savingThrowsWidget()
