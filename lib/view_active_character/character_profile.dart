@@ -686,9 +686,6 @@ class CharacterProfilePage extends State<CharacterProfile> {
                     width: 115,
                     child: TextButton(
                       onPressed: () {
-                        for (int i in modifiers) {
-                          log(i.toString());
-                        }
                         //roll the skill
                         ScaffoldMessenger.of(context).hideCurrentSnackBar();
                         SnackBar snackBar = SnackBar(
@@ -736,10 +733,6 @@ class CharacterProfilePage extends State<CharacterProfile> {
       );
     }
 
-    //Widget classFeaturesList() {
-    //
-    //}
-
     Widget attacksWidget() {
       return Container(
         height: 150,
@@ -752,6 +745,54 @@ class CharacterProfilePage extends State<CharacterProfile> {
             'Attacks will go here.',
             style: headerText,
           ),
+        ),
+      );
+    }
+
+    Widget equipmentWidget() {
+      List<Widget> equipmentWidgets = [];
+
+      Widget widget = Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButton(
+              isExpanded: true,
+              value: character.equippedArmour!,
+              icon: const Icon(Icons.arrow_drop_down_outlined),
+              elevation: 16,
+              style: contentText,
+              underline: Container(
+                height: 2,
+                color: Colors.blue,
+              ),
+              onChanged: (String? value) {
+                setState(() {
+                  character.equippedArmour = value;
+                });
+              },
+              items: character.charClass!.armourProfs!.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      );
+
+      equipmentWidgets.add(widget);
+      return Container(
+        width: 160,
+        padding: const EdgeInsets.only(left:10, right:10),
+        child: ExpansionTile(
+            title: const Text('Equipment', style: headerText,),
+            children: [
+              Column(
+                children: equipmentWidgets,
+              )
+            ]
         ),
       );
     }
@@ -1002,6 +1043,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
                           children: [
                             attacksWidget(),
                             const Divider(),
+                            equipmentWidget(),
                           ],
                         )
                       ],

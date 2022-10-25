@@ -556,6 +556,7 @@ class FirebaseCRUD {
         'race': raceString,
         'class': classString,
         'subclass': '',
+        'equippedArmour': 'None',
         'remainingHitDie': 1,
         'spellcaster': spellcaster,
         'abilityScores': abilityScores,
@@ -589,6 +590,7 @@ class FirebaseCRUD {
         'race': raceString,
         'class': classString,
         'subclass': '',
+        'equippedArmour': 'None',
         'spellcaster': spellcaster,
         'remainingHitDie': 1,
         'abilityScores': abilityScores,
@@ -684,6 +686,7 @@ class FirebaseCRUD {
     int currentHp = snapshotCharacter['currentHP'];
     int profBonus = snapshotCharacter['profBonus'];
     String proficiencies = snapshotCharacter['proficiencies'];
+    String equippedArmour = snapshotCharacter['equippedArmour'];
 
     final snapshotClass = await FirebaseFirestore.instance.collection('classes').doc(classString).get();
 
@@ -749,6 +752,7 @@ class FirebaseCRUD {
         name: snapshotCharacter['name'],
         charClass: charClass,
         race: race,
+        equippedArmour: equippedArmour,
         remainingHitDie: remainingHitDie,
         background: background,
         level: charLevel,
