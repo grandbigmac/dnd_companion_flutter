@@ -14,6 +14,7 @@ class Character {
   Level? level;
   Class? charClass;
   Race? race;
+  String? equippedArmour;
   Subclass? subclass;
   List<int>? abilityScores;
   Background? background;
@@ -31,6 +32,7 @@ class Character {
     this.level,
     this.charClass,
     this.race,
+    this.equippedArmour,
     this.subclass,
     this.abilityScores,
     this.background,

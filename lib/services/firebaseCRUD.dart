@@ -590,6 +590,7 @@ class FirebaseCRUD {
         'class': classString,
         'subclass': '',
         'spellcaster': spellcaster,
+        'remainingHitDie': 1,
         'abilityScores': abilityScores,
         'background': backgroundString,
         'proficiencies': proficiencies,

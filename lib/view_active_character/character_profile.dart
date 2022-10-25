@@ -65,6 +65,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
   String getAC(int dexMod, int conMod, Character character) {
     bool UA = false;
     int AC = 0;
+    int baseAC = 10;
+
+    //Check for the character's armour type
+
 
     for (Feature i in character.charClass!.featureList!) {
       if (i.name == 'Unarmored Defense') {
@@ -73,11 +77,11 @@ class CharacterProfilePage extends State<CharacterProfile> {
     }
     if (UA) {
       log('Unarmored Defense : True');
-      AC = 10 + dexMod + conMod;
+      AC = baseAC + dexMod + conMod;
     }
     else {
       log('Unarmored Defense : False');
-      AC = 10 + dexMod;
+      AC = baseAC + dexMod;
     }
 
     return AC.toString();
