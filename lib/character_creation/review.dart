@@ -634,6 +634,8 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                       character.level = Level(number: 1);
                       character.currentHp = character.hp!;
                       character.profBonus = 2;
+                      character.equippedArmour = 'None';
+                      character.remainingHitDie = 1;
                       await FirebaseCRUD.addNewCharacter(character: character, uId: uId);
                       SnackBar snackBar = SnackBar(
                         content: Text(

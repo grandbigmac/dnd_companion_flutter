@@ -83,6 +83,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
     else {
       log('Unarmored Defense : False');
 
+      log(character.equippedArmour!);
       switch (character.equippedArmour!) {
         case 'None': {
           baseAC = 10;

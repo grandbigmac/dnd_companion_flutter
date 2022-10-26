@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dnd_app_flutter/character_creation/choose_race.dart';
 import 'package:dnd_app_flutter/login_register/login.dart';
 import 'package:dnd_app_flutter/services/firebaseCRUD.dart';
@@ -13,6 +14,7 @@ import 'package:page_transition/page_transition.dart';
 import 'models/character.dart';
 import 'models/class.dart';
 import 'models/feature.dart';
+import 'models/level.dart';
 import 'models/race.dart';
 late Character activeCharacter;
 
@@ -27,6 +29,8 @@ class UserHomePage extends StatefulWidget {
 
 class _UserHomePageState extends State<UserHomePage> {
 
+  List<Character> tempCharacterList = [];
+  List<String> charNames = [];
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +72,17 @@ class _UserHomePageState extends State<UserHomePage> {
       }
     }
 
+    void charList() async {
+      String uId = FirebaseAuth.instance.currentUser!.uid;
+      charNames = await FirebaseCRUD.getCharacterList(uId);
+      for (String i in charNames) {
+        log(i);
+      }
+    }
+
     Widget tempHomePage() {
+
+      charList();
 
       return Container(
         padding: const EdgeInsets.all(24),
@@ -195,9 +209,48 @@ class _UserHomePageState extends State<UserHomePage> {
       );
     }
 
+    void getCharacterListDetails() async {
+      for (String i in charNames) {
+        var data = await FirebaseFirestore.instance.collection('characters').doc(i).get();
+        String raceString = data.get('race');
+        String classString = data.get('class');
+        List<String> raceclassnames = await FirebaseCRUD.getClassAndRaceName(classString, raceString);
+        Character previewChar = Character(name: data.get('name'), charClass: Class(name: raceclassnames[0]), race: Race(name: raceclassnames[1]), level: Level(number: data.get('level')));
+
+        tempCharacterList.add(previewChar);
+      }
+      for (Character i in tempCharacterList) {
+        log('Name: ${i.name!}');
+      }
+    }
+
+    List<Widget> characterInformationList() {
+      List<Widget> widgets = [];
+      getCharacterListDetails();
+
+      for (Character i in tempCharacterList) {
+        Widget widget = Container(
+          child: Column(
+            children: [
+              const Text(
+                'Character Name',
+                style: contentText,
+              ),
+              Text(
+                i.name!,
+                style: headerText,
+              ),
+            ],
+          ),
+        );
+        widgets.add(widget);
+      }
+      return widgets;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        //automaticallyImplyLeading: false,
         title: Text(widget.title),
         actions: <Widget>[
           IconButton(
@@ -216,6 +269,24 @@ class _UserHomePageState extends State<UserHomePage> {
             }
           )
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            Container(
+              height: 100,
+              child: DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Center(child: Text('Character Select', style: titleStyleButton,)),
+              ),
+            ),
+            Column(
+              children: characterInformationList(),
+            ),
+          ],
+        ),
       ),
       body: ListView(
         children: [

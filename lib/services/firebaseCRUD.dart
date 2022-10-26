@@ -536,7 +536,7 @@ class FirebaseCRUD {
     CollectionReference collection = FirebaseFirestore.instance.collection('characters');
     DocumentReference documentReference = collection.doc(id);
 
-    updateActiveCharacter(id, uId);
+    updateActiveCharacterAndAddToArray(id, uId, character);
 
     bool spellcaster = character.charClass!.spellcaster!;
 
@@ -617,20 +617,46 @@ class FirebaseCRUD {
       return response;
     }
 
-
-
   }
 
-  static void updateActiveCharacter(String id, String uId) async {
+  static Future<List<String>> getClassAndRaceName(String classString, String raceString) async {
+    List<String> data = [];
+
+    var data1 = await FirebaseFirestore.instance.collection('classes').doc(classString).get();
+    data.add(data1.get('name'));
+
+    var data2 = await FirebaseFirestore.instance.collection('races').doc(raceString).get();
+    data.add(data2.get('name'));
+
+    return data;
+  }
+
+  static void updateActiveCharacterAndAddToArray(String id, String uId, Character character) async {
+    final query = await FirebaseFirestore.instance.collection('users').where('uId', isEqualTo: uId).get();
+    for (var doc in query.docs){
+      String docId = doc.id!;
+      List list = [id];
+      await FirebaseFirestore.instance.collection('users').doc(docId).update({'activeCharacter': id, 'characters': FieldValue.arrayUnion(list)});
+    }
+  }
+
+  static void updateActiveCharacter(String id, String uId, Character character) async {
     final query = await FirebaseFirestore.instance.collection('users').where('uId', isEqualTo: uId).get();
     for (var doc in query.docs){
       String docId = doc.id!;
       await FirebaseFirestore.instance.collection('users').doc(docId).update({'activeCharacter': id});
     }
-
   }
 
-
+  static Future<List<String>> getCharacterList(String uId) async {
+    List<String> list = [];
+    await FirebaseFirestore.instance.collection('users').where('uId', isEqualTo: uId).get().then((value) {
+      for (var doc in value.docs) {
+        list = List.from(doc.get('characters'));
+      }
+    });
+    return list;
+  }
 
   static Future<Character> getCharacter(String uId) async {
 
@@ -683,7 +709,7 @@ class FirebaseCRUD {
     //Get character hp
     int hp = snapshotCharacter['hp'];
     int remainingHitDie = snapshotCharacter['remainingHitDie'];
-    int currentHp = snapshotCharacter['currentHP'];
+    int currentHp = snapshotCharacter['currentHp'];
     int profBonus = snapshotCharacter['profBonus'];
     String proficiencies = snapshotCharacter['proficiencies'];
     String equippedArmour = snapshotCharacter['equippedArmour'];
