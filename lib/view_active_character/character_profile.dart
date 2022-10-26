@@ -69,10 +69,11 @@ class CharacterProfilePage extends State<CharacterProfile> {
 
     //Check for the character's armour type
 
-
     for (Feature i in character.charClass!.featureList!) {
       if (i.name == 'Unarmored Defense') {
-        UA = true;
+        if (character.equippedArmour! == 'None'){
+          UA = true;
+        }
       }
     }
     if (UA) {
@@ -81,6 +82,30 @@ class CharacterProfilePage extends State<CharacterProfile> {
     }
     else {
       log('Unarmored Defense : False');
+
+      switch (character.equippedArmour!) {
+        case 'None': {
+          baseAC = 10;
+        }
+        break;
+        case 'Light Armor': {
+          baseAC = 12;
+        }
+        break;
+        case 'Medium Armor': {
+          baseAC = 15;
+          if (dexMod > 2) {
+            dexMod = 2;
+          }
+        }
+        break;
+        case 'Heavy Armor': {
+          baseAC = 18;
+          dexMod = 0;
+        }
+        break;
+      }
+
       AC = baseAC + dexMod;
     }
 
@@ -756,6 +781,10 @@ class CharacterProfilePage extends State<CharacterProfile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              'Armor',
+              style: headerText,
+            ),
             DropdownButton(
               isExpanded: true,
               value: character.equippedArmour!,

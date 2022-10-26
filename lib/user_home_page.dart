@@ -190,28 +190,6 @@ class _UserHomePageState extends State<UserHomePage> {
                 child: const Text('VIEW ACTIVE CHARACTER', style: TextStyle(color: Colors.white),),
               ),
             ),
-            //SIGN OUT BUTTON
-            const SizedBox(height: 200,),
-            SizedBox(
-              height: 35,
-              width: 250,
-              child: ElevatedButton(
-                onPressed: () {
-                  //buttons
-                  signOut();
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.bottomToTop,
-                        child: const LoginPage(title: 'Log in',),
-                        inheritTheme: true,
-                        ctx: context),
-                  );
-                },
-                style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-                child: const Text('SIGN OUT', style: TextStyle(color: Colors.white),),
-              ),
-            ),
           ],
         ),
       );
@@ -221,6 +199,23 @@ class _UserHomePageState extends State<UserHomePage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.logout),
+            color: Colors.white,
+            onPressed: () {
+              signOut();
+              Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.bottomToTop,
+                    child: const LoginPage(title: 'Log in',),
+                    inheritTheme: true,
+                    ctx: context),
+              );
+            }
+          )
+        ],
       ),
       body: ListView(
         children: [

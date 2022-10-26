@@ -618,6 +618,13 @@ class _ChooseNameAndReview extends State<ReviewNewCharacter> {
                   width: 140,
                   child: ElevatedButton(
                     onPressed: () async {
+
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(child: CircularProgressIndicator(),),
+                      );
+
                       log('finish character');
                       character.name = characterNameController.text.toString();
                       character.abilityScores = postRaceASI;
