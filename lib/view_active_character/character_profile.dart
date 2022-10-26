@@ -229,6 +229,15 @@ class CharacterProfilePage extends State<CharacterProfile> {
 
     Widget hitDieWidget() {
 
+      Icon hitDieIcon;
+
+      if (character.remainingHitDie! > 0) {
+        hitDieIcon = const Icon(Icons.favorite, color: Colors.blue, size: 12);
+      }
+      else {
+        hitDieIcon = const Icon(Icons.favorite_border, color: Colors.blue, size: 12);
+      }
+
 
       Widget widget = Container(
         width: 150,
@@ -267,11 +276,7 @@ class CharacterProfilePage extends State<CharacterProfile> {
               child: const Center(child: Icon(Icons.add, color: Colors.white,)),
             ),
             const SizedBox(width: 10,),
-            const Icon(
-              Icons.favorite,
-              color: Colors.blue,
-              size: 12,
-            ),
+            hitDieIcon,
             Text(
               character.remainingHitDie!.toString(),
               style: contentText,
