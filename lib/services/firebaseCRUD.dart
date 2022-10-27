@@ -640,7 +640,7 @@ class FirebaseCRUD {
     }
   }
 
-  static void updateActiveCharacter(String id, String uId, Character character) async {
+  static Future<void> updateActiveCharacter(String id, String uId) async {
     final query = await FirebaseFirestore.instance.collection('users').where('uId', isEqualTo: uId).get();
     for (var doc in query.docs){
       String docId = doc.id!;
@@ -709,7 +709,7 @@ class FirebaseCRUD {
     //Get character hp
     int hp = snapshotCharacter['hp'];
     int remainingHitDie = snapshotCharacter['remainingHitDie'];
-    int currentHp = snapshotCharacter['currentHp'];
+    int currentHp = snapshotCharacter['currentHP'];
     int profBonus = snapshotCharacter['profBonus'];
     String proficiencies = snapshotCharacter['proficiencies'];
     String equippedArmour = snapshotCharacter['equippedArmour'];

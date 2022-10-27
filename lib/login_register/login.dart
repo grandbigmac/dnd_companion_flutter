@@ -173,15 +173,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void loginGetUser(String uId) async {
-    Character activeChar = await FirebaseCRUD.getCharacter(uId);
-
-    Navigator.push(
-      context,
-      PageTransition(
-          type: PageTransitionType.bottomToTop,
-          child: UserHomePage(title: 'Home', activeCharacter: activeChar,),
-          inheritTheme: true,
-          ctx: context),
-    );
+    try {
+      Character activeChar = await FirebaseCRUD.getCharacter(uId);
+      Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.bottomToTop,
+            child: UserHomePage(title: 'Home', activeCharacter: activeChar,),
+            inheritTheme: true,
+            ctx: context),
+      );
+    } catch (e) {
+      SnackBar snackbar = snackBar(e.toString());
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      FirebaseAuth.instance.signOut();
+    }
   }
 }

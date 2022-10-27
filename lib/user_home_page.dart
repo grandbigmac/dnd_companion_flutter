@@ -31,6 +31,137 @@ class _UserHomePageState extends State<UserHomePage> {
 
   List<Character> tempCharacterList = [];
   List<String> charNames = [];
+  List<Widget> drawerWidgets = [];
+
+  void charList() async {
+    String uId = FirebaseAuth.instance.currentUser!.uid;
+    charNames = await FirebaseCRUD.getCharacterList(uId);
+    for (String i in charNames) {
+      log(i);
+    }
+    getCharacterListDetails();
+  }
+
+  void getCharacterListDetails() async {
+
+    for (String i in charNames) {
+      var data = await FirebaseFirestore.instance.collection('characters').doc(i).get();
+      String raceString = data.get('race');
+      String classString = data.get('class');
+      List<String> raceclassnames = await FirebaseCRUD.getClassAndRaceName(classString, raceString);
+      Character previewChar = Character(name: data.get('name'), charClass: Class(name: raceclassnames[0]), race: Race(name: raceclassnames[1]), level: Level(number: data.get('level')));
+
+      tempCharacterList.add(previewChar);
+    }
+    for (Character i in tempCharacterList) {
+      log('Name: ${i.name!}');
+      log('Class: ${i.charClass!.name!}');
+      log('Race: ${i.race!.name!}');
+      log('Level: ${i.level!.number!}');
+    }
+
+    characterInformationList();
+  }
+
+  void characterInformationList() {
+
+    for (int j = 0; j < tempCharacterList.length; j++) {
+      Character i = tempCharacterList[j];
+
+      Widget widget = ListTile(
+        leading: const Icon(Icons.account_circle, color: Colors.blue, size: 40,),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Name', style: headerText,),
+                    Text(i.name!, style: contentText,),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Text('Race', style: headerText),
+                    Text(i.race!.name!, style: contentText,),
+                  ],
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Class', style: headerText),
+                    Text(i.charClass!.name!, style: contentText),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Text('Level', style: headerText),
+                    Text(i.level!.number!.toString(), style: contentText),
+                  ],
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(child: CircularProgressIndicator(),),
+                      );
+                      log('Attempting');
+                      await FirebaseCRUD.updateActiveCharacter(
+                        charNames[j], FirebaseAuth.instance.currentUser!.uid,);
+                      Character char = await FirebaseCRUD.getCharacter(FirebaseAuth.instance.currentUser!.uid);
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.bottomToTop,
+                            child: UserHomePage(title: 'Home', activeCharacter: char,),
+                            inheritTheme: true,
+                            ctx: context),
+                      );
+                    } catch (e) {
+                      Navigator.pop(context);
+                      SnackBar snackBar = SnackBar(
+                        content: Text(
+                          'Something went wrong!\n$e',
+                        ),
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                  },
+                  child: const Text('Make Active Character', style: headerText,),
+                )
+              ],
+            ),
+            const Divider(),
+          ],
+        ),
+      );
+      drawerWidgets.add(widget);
+    }
+  }
+
+  @override
+  void initState() {
+    charList();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,17 +203,7 @@ class _UserHomePageState extends State<UserHomePage> {
       }
     }
 
-    void charList() async {
-      String uId = FirebaseAuth.instance.currentUser!.uid;
-      charNames = await FirebaseCRUD.getCharacterList(uId);
-      for (String i in charNames) {
-        log(i);
-      }
-    }
-
     Widget tempHomePage() {
-
-      charList();
 
       return Container(
         padding: const EdgeInsets.all(24),
@@ -209,44 +330,8 @@ class _UserHomePageState extends State<UserHomePage> {
       );
     }
 
-    void getCharacterListDetails() async {
-      for (String i in charNames) {
-        var data = await FirebaseFirestore.instance.collection('characters').doc(i).get();
-        String raceString = data.get('race');
-        String classString = data.get('class');
-        List<String> raceclassnames = await FirebaseCRUD.getClassAndRaceName(classString, raceString);
-        Character previewChar = Character(name: data.get('name'), charClass: Class(name: raceclassnames[0]), race: Race(name: raceclassnames[1]), level: Level(number: data.get('level')));
 
-        tempCharacterList.add(previewChar);
-      }
-      for (Character i in tempCharacterList) {
-        log('Name: ${i.name!}');
-      }
-    }
 
-    List<Widget> characterInformationList() {
-      List<Widget> widgets = [];
-      getCharacterListDetails();
-
-      for (Character i in tempCharacterList) {
-        Widget widget = Container(
-          child: Column(
-            children: [
-              const Text(
-                'Character Name',
-                style: contentText,
-              ),
-              Text(
-                i.name!,
-                style: headerText,
-              ),
-            ],
-          ),
-        );
-        widgets.add(widget);
-      }
-      return widgets;
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -283,7 +368,7 @@ class _UserHomePageState extends State<UserHomePage> {
               ),
             ),
             Column(
-              children: characterInformationList(),
+              children: drawerWidgets,
             ),
           ],
         ),
