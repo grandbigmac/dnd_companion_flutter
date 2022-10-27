@@ -203,6 +203,156 @@ class _UserHomePageState extends State<UserHomePage> {
       }
     }
 
+    Widget buttonListViewCharacterCreation() {
+
+      return Padding(
+        padding: const EdgeInsets.all(0),
+        child: Container(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Character Actions',
+                style: headerText,
+              ),
+              Container(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Card(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 140,
+                              width: 250,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  //Show a loading progress indicator
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => Center(child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(16.0),
+                                            color: Colors.white,
+                                            border: Border.all(color: Colors.blue, width: 2),
+                                          ),
+                                          padding: const EdgeInsets.all(12),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: const [
+                                              CircularProgressIndicator(),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Text(
+                                                'Loading Race data ...',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontFamily: 'Roboto',
+                                                  color: Colors.blue,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),),
+                                  );
+
+                                  List<Race> raceList = await FirebaseCRUD.getRaces();
+
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => Center(child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(16.0),
+                                            color: Colors.white,
+                                            border: Border.all(color: Colors.blue, width: 2),
+                                          ),
+                                          padding: const EdgeInsets.all(12),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: const [
+                                              CircularProgressIndicator(),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Text(
+                                                'Loading Class data ...',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontFamily: 'Roboto',
+                                                  color: Colors.blue,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),),
+                                  );
+                                  List<Class> classList = await FirebaseCRUD.getClasses();
+
+                                  List<Race> backupList = [];
+
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        type: PageTransitionType.bottomToTop,
+                                        child: ChooseRace(title: 'Choose Race', races: raceList, classes: classList, character: Character(), activeChar: activeCharacter, backuplist: backupList,),
+                                        inheritTheme: true,
+                                        ctx: context),
+                                  );
+                                },
+                                child: Text('Create\nCharacter', style: titleStyleButton,),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Card(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 140,
+                              width: 250,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  //VIEW ACTIVE CHARACTER
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        type: PageTransitionType.bottomToTop,
+                                        child: CharacterProfile(title: 'Profile', activeChar: activeCharacter,),
+                                        inheritTheme: true,
+                                        ctx: context),
+                                  );
+                                },
+                                child: Text('View\nActive\nCharacter', style: titleStyleButton,),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     Widget tempHomePage() {
 
       return Container(
@@ -210,121 +360,7 @@ class _UserHomePageState extends State<UserHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            //CREATE CHARACTER BUTTON
-            SizedBox(
-              height: 35,
-              width: 250,
-              child: ElevatedButton(
-                onPressed: () async {
-                  //Show a loading progress indicator
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) => Center(child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.0),
-                            color: Colors.white,
-                            border: Border.all(color: Colors.blue, width: 2),
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              CircularProgressIndicator(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Text(
-                                'Loading Race data ...',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'Roboto',
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),),
-                  );
-
-                  List<Race> raceList = await FirebaseCRUD.getRaces();
-
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) => Center(child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.0),
-                            color: Colors.white,
-                            border: Border.all(color: Colors.blue, width: 2),
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              CircularProgressIndicator(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Text(
-                                'Loading Class data ...',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'Roboto',
-                                  color: Colors.blue,
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),),
-                  );
-                  List<Class> classList = await FirebaseCRUD.getClasses();
-
-                  List<Race> backupList = [];
-
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.bottomToTop,
-                        child: ChooseRace(title: 'Choose Race', races: raceList, classes: classList, character: Character(), activeChar: activeCharacter, backuplist: backupList,),
-                        inheritTheme: true,
-                        ctx: context),
-                  );
-                },
-                style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-                child: const Text('CREATE A CHARACTER', style: TextStyle(color: Colors.white),),
-              ),
-            ),
-            const Divider(),
-            SizedBox(
-              height: 35,
-              width: 250,
-              child: ElevatedButton(
-                onPressed: () {
-                  //VIEW ACTIVE CHARACTER
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.bottomToTop,
-                        child: CharacterProfile(title: 'Profile', activeChar: activeCharacter,),
-                        inheritTheme: true,
-                        ctx: context),
-                  );
-                },
-                style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
-                child: const Text('VIEW ACTIVE CHARACTER', style: TextStyle(color: Colors.white),),
-              ),
-            ),
+            buttonListViewCharacterCreation(),
           ],
         ),
       );
@@ -383,6 +419,7 @@ class _UserHomePageState extends State<UserHomePage> {
                   'Currently active character is: ${activeCharacter.name!}',
                   style: contentText,
                 ),
+                const Divider(),
                 tempHomePage(),
               ],
             ),
