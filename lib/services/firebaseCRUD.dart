@@ -566,7 +566,7 @@ class FirebaseCRUD {
         'languages': proficienciesLang,
         'profBonus': 2,
         'hp': hp,
-        'currentHp': hp,
+        'currentHP': hp,
         'spellList': spellList,
       };
 
