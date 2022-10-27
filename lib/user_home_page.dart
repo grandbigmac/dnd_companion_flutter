@@ -314,7 +314,7 @@ class _UserHomePageState extends State<UserHomePage> {
                                         ctx: context),
                                   );
                                 },
-                                child: Text('Create\nCharacter', style: titleStyleButton,),
+                                child: Text('Create\nCharacter', textAlign: TextAlign.center, style: titleStyleButton,),
                               ),
                             )
                           ],
@@ -338,7 +338,52 @@ class _UserHomePageState extends State<UserHomePage> {
                                         ctx: context),
                                   );
                                 },
-                                child: Text('View\nActive\nCharacter', style: titleStyleButton,),
+                                child: Text('View\nActive\nCharacter', textAlign: TextAlign.center, style: titleStyleButton,),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+              ),
+              const Divider(),
+              const Text(
+                'DM Actions',
+                style: headerText,
+              ),
+              Container(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Card(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 140,
+                              width: 250,
+                              child: ElevatedButton(
+                                onPressed: () {
+
+                                },
+                                child: Text('Monster\nCompendium', textAlign: TextAlign.center, style: titleStyleButton,),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Card(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 140,
+                              width: 250,
+                              child: ElevatedButton(
+                                onPressed: () {
+
+                                },
+                                child: Text('Setup\nCombat', textAlign: TextAlign.center,style: titleStyleButton,),
                               ),
                             )
                           ],
@@ -361,6 +406,70 @@ class _UserHomePageState extends State<UserHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             buttonListViewCharacterCreation(),
+          ],
+        ),
+      );
+    }
+
+    Widget pageHeader() {
+
+
+      return Container(
+        width: double.infinity,
+        height: 100,
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const Icon(
+              Icons.account_circle,
+              color: Colors.blue,
+              size: 80,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Name',
+                  style: headerText,
+                ),
+                Text(
+                  activeCharacter.name!,
+                  style: contentText,
+                ),
+                const Text(
+                  'Class',
+                  style: headerText,
+                ),
+                Text(
+                  activeCharacter.charClass!.name!,
+                  style: contentText,
+                )
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Level',
+                  style: headerText,
+                ),
+                Text(
+                  activeCharacter.level!.number!.toString(),
+                  style: contentText,
+                ),
+                const Text(
+                  'Race',
+                  style: headerText,
+                ),
+                Text(
+                  activeCharacter.race!.name!,
+                  style: contentText,
+                )
+              ],
+            )
           ],
         ),
       );
@@ -415,10 +524,7 @@ class _UserHomePageState extends State<UserHomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Currently active character is: ${activeCharacter.name!}',
-                  style: contentText,
-                ),
+                pageHeader(),
                 const Divider(),
                 tempHomePage(),
               ],
