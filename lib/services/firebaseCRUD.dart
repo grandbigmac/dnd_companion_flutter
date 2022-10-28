@@ -685,7 +685,7 @@ class FirebaseCRUD {
     characterString = snapshotUser.docs.first['activeCharacter'];
 
     if (characterString == 'NEW') {
-      return Character(name: 'New User');
+      return Character(name: 'New User', charClass: Class(name: 'None'), level: Level(number: 0), race: Race(name: 'None'));
     }
 
     final snapshotCharacter = await FirebaseFirestore.instance.collection('characters').doc(characterString).get();

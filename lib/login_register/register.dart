@@ -55,7 +55,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
       await FirebaseCRUD.addNewUser(user: user);
 
-      signOut();
+      //signOut();
 
       Navigator.push(
         context,
